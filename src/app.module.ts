@@ -19,10 +19,10 @@ import {UsersQueryRepository} from './users/repositories/users.query-repository'
 import {UsersRepository} from './users/repositories/users.repository';
 import {UsersService} from './users/application/users.service';
 import {User, UserSchema} from './users/domain/users-schema';
-import {JwtService} from './_common/jwt-service';
+import {MyJwtService} from './_common/jwt-service';
 import {AuthModule} from "./auth/auth.module";
 import {BasicStrategy} from "./auth/strategies/basic.strategy";
-import {AuthController} from "./auth/auth.controller";
+import {AuthController} from "./auth/presentation/auth.controller";
 
 @Module({
     imports: [
@@ -46,7 +46,7 @@ import {AuthController} from "./auth/auth.controller";
         UsersService,
         UsersQueryRepository,
         UsersRepository,
-        JwtService
+        MyJwtService
     ],
 })
 export class AppModule {

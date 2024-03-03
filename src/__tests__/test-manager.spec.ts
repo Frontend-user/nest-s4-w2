@@ -142,8 +142,13 @@ export class TestManager {
         expect(JSON.parse(getOnePost.text)).toEqual([]);
     }
 
-    async deleteBlog() {
+    async deleteAll() {
         await request(this.httpServer).delete('/testing/all-data').expect(204);
+    }
+    async testFunc(refreshToken:string) {
+        let s  =await request(this.httpServer).get('/auth/test')
+            .set('Cookie', [refreshToken])
+        expect(s).toEqual('sasda')
     }
 
     async updatePost(postId: string, blogId: string) {
@@ -171,7 +176,7 @@ export class TestManager {
         const reponse = await request(this.httpServer)
             .post('/users')
             .set('Authorization', `${SUPERADMIN_TOKEN}`)
-            .send(inCorrectUser1);
+            .send(correctUser1);
 
         return JSON.parse(reponse.text);
     }
@@ -181,5 +186,14 @@ export class TestManager {
             .set('Authorization', `${SUPERADMIN_TOKEN}`)
 
         return reponse.status;
+    }
+
+    async loginCreatedUserBySuperAdmin(loginCorrectData:any){
+        const response = await request(this.httpServer)
+            .post('/auth/login')
+            .send(loginCorrectData)
+
+        // return JSON.parse(response.text)
+        return  response
     }
 }

@@ -31,9 +31,9 @@ export class UsersController {
     constructor(
         protected usersService: UsersService,
         protected usersQueryRepository: UsersQueryRepository,
-        protected usersRepository: UsersRepository,
-        protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsRepository: UsersRepository,
+        // protected usersRepository: UsersRepository,
+        // protected blogsQueryRepository: BlogsQueryRepository,
+        // protected postsRepository: UsersRepository,
     ) {
     }
 

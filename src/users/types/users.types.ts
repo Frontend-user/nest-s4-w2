@@ -33,3 +33,4 @@ export type ExtendedLikesInfoType = {
   myStatus: LikeStatus;
   newestLikes: NewLikeStatusType[];
 };
+

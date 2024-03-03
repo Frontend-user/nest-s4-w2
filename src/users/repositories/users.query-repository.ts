@@ -1,13 +1,18 @@
 import {Model} from 'mongoose';
 import {InjectModel} from '@nestjs/mongoose';
 import {Injectable} from '@nestjs/common';
-import {createUserEntity, User} from '../domain/users-schema';
+import {createUserEntity, User, UserDocumentType} from '../domain/users-schema';
 import {UsersMongoDataMapper} from '../domain/users.mongo.dm';
 import {QueryUtilsClass} from '../../_common/query.utils';
 
 @Injectable()
 export class UsersQueryRepository {
     constructor(@InjectModel('User') private userModel: Model<User> & createUserEntity) {
+    }
+
+    async getUserByEmailOrLogin(loginOrEmail: String): Promise<UserDocumentType  | null> {
+        const response:UserDocumentType | null = await this.userModel.findOne({$or: [{'accountData.login': loginOrEmail}, {'accountData.email': loginOrEmail}]}).lean()
+        return response ? response : null
     }
 
     async getUsers(

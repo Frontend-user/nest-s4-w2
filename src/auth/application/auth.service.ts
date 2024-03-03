@@ -1,27 +1,39 @@
 import {Injectable} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
+import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
+import {MyJwtService} from "../../_common/jwt-service";
+import {JwtService} from "@nestjs/jwt";
+import {AccessRefreshTokens, LoginOrEmailPasswordClass, LoginOrEmailPasswordModel} from "../types/auth.types";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly jwtService: JwtService) {
+        private readonly myJwtService: MyJwtService,
+        private readonly jwtService: JwtService,
+        private readonly usersQueryRepository: UsersQueryRepository,
+    ) {
     }
 
-    async validateUser(username: string, pass: string): Promise<any> {
-        console.log(username,'st')
-        let users = [{id: 1, login: 'login', password: '123'}, {id: 2, login: 'login2', password: '123'}]
-        const user = users.find(_ => _.login === username);
-        if (user && user.password === pass) {
-            const {password, ...result} = user;
-            return result;
+    async validateUser(authData:LoginOrEmailPasswordClass): Promise<{ userId: string } | null> {
+        const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(authData.loginOrEmail)
+        if (getUserForAuth) {
+            const passwordSalt = getUserForAuth.passwordSalt
+            const passwordHash = getUserForAuth.passwordHash
+            const newPasswordHash = await this.myJwtService.generateHash(authData.password, passwordSalt)
+            if (newPasswordHash === passwordHash) {
+                return {userId: String(getUserForAuth._id)}
+            }
         }
         return null;
     }
 
-    async login(user: any) {
-        const payload = {username: user.username, sub: user.userId};
+    async login(user: any):Promise<AccessRefreshTokens> {
+        const payload = {userId: user.userId};
+        const payloadForRefreshToken = {userId: user.userId};
+        const accessToken = await this.myJwtService.createJWT(payload, '10s')
+        const refreshToken = await this.myJwtService.createRefreshToken(payloadForRefreshToken, '10s')
         return {
-            access_token: this.jwtService.sign(payload),
+            accessToken,
+            refreshToken
         };
     }
 }

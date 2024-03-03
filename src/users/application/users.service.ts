@@ -1,7 +1,5 @@
 import { UsersRepository } from '../repositories/users.repository';
-import { JwtService } from '../../_common/jwt-service';
-import { PostsQueryRepository } from '../../posts/repositories/posts.query-repository';
-import { User, UserCreateModel, UserDocumentType } from '../domain/users-schema';
+import { User ,UserDocumentType } from '../domain/users-schema';
 import { Injectable } from '@nestjs/common';
 import {IsEmail, IsInt, Length} from "class-validator";
 import {CreateUserInputModelType} from "../users.controller";
@@ -12,8 +10,7 @@ import {CreateUserInputModelType} from "../users.controller";
 @Injectable()
 export class UsersService {
   constructor(
-    protected usersRepositories: UsersRepository,
-    protected postsQueryRepository: PostsQueryRepository,
+    protected usersRepositories: UsersRepository
   ) {}
 
   async createUser(

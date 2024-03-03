@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes } from 'mongoose';
-import { JwtService } from '../../_common/jwt-service';
+import { MyJwtService } from '../../_common/jwt-service';
 import {CreateUserInputModelType} from "../users.controller";
 
 export type UserDocumentType = HydratedDocument<User>;
@@ -26,8 +26,8 @@ export class User {
   @Prop() isCreatedFromAdmin: boolean;
 
   static async createUserEntity(user: CreateUserInputModelType, isReqFromSuperAdmin: boolean) {
-    const passwordSalt = await JwtService.generateSalt(10);
-    const passwordHash = await JwtService.generateHash(user.password, passwordSalt);
+    const passwordSalt = await MyJwtService.generateSalt(10);
+    const passwordHash = await MyJwtService.generateHash(user.password, passwordSalt);
     const userEntity: any = {
       accountData: {
         login: user.login,

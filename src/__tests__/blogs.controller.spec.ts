@@ -2,10 +2,11 @@ import {correctBlogData, correctUser1, TestManager} from './test-manager.spec';
 import mongoose from 'mongoose';
 import {INestApplication} from '@nestjs/common';
 import {Test, TestingModule} from '@nestjs/testing';
-import {AppModule} from '../../app.module';
-import {BlogsController} from '../blogs.controller';
+import {AppModule} from '../app.module';
+import {BlogsController} from '../blogs/blogs.controller';
 import request from "supertest";
-import {appSettings} from "../../app.settings";
+import {appSettings} from "../app.settings";
+import {AuthController} from "../auth/presentation/auth.controller";
 
 describe('Blogs', () => {
     let app: INestApplication;
@@ -16,7 +17,7 @@ describe('Blogs', () => {
     beforeAll(async () => {
         const moduleFixture:TestingModule = await Test.createTestingModule({
             imports: [AppModule],
-        }).overrideProvider(BlogsController).useClass(BlogsController).compile()  // .useValue({
+        }).overrideProvider(AuthController).useClass(AuthController).compile()  // .useValue({
             //     s: 'q',
             // })
             // .compile();
@@ -56,13 +57,13 @@ describe('Blogs', () => {
         await app.close();
     });
     it('TEST DELETE ALL', async () => {
-        await testManager.deleteBlog();
+        await testManager.deleteAll();
     });
 
 
     describe('Users', () => {
         it('TEST DELETE ALL', async () => {
-            await testManager.deleteBlog();
+            await testManager.deleteAll();
         });
 
         it('get users', async () => {
@@ -93,10 +94,50 @@ describe('Blogs', () => {
         });
 
     })
+
+    describe('Auth', () => {
+        it('TEST DELETE ALL', async () => {
+            await testManager.deleteAll();
+        });
+
+        it('get users', async () => {
+            const reponse = await testManager.getUsers();
+            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
+        });
+
+        const  loginCorrectData = {
+            loginOrEmail: "login",
+            password: "password"
+        }
+        let uses1_id: string
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin();
+            expect(reponse).toEqual({
+                createdAt: expect.any(String),
+                email: expect.any(String),
+                id: expect.any(String),
+                login: expect.any(String)
+            })
+            uses1_id = reponse.id
+        });
+
+let refreshToken:string
+        it('Login created user by superadmin', async () => {
+            const reponse:any = await testManager.loginCreatedUserBySuperAdmin(loginCorrectData);
+            refreshToken = reponse.header['set-cookie']
+            expect(JSON.parse(reponse.text)).toEqual('accesstokem')
+        });
+
+        it('Lget REFRESHTOKEN', async () => {
+            const reponse = await testManager.testFunc(refreshToken);
+            expect(reponse).toEqual('refreshTOken')
+        });
+    })
+
 let blog_1: any;
     let post_1: any;
     it('TEST DELETE ALL', async () => {
-      await testManager.deleteBlog();
+      await testManager.deleteAll();
     });
     it(`CREATE BLOG`, async () => {
       blog_1 = await testManager.createBlog();
@@ -170,6 +211,6 @@ let blog_1: any;
     //   await testManager.getPosts();
     // });
     // it(`DELETE ALL DATA`, async () => {
-    //   await TestManager.deleteBlog();
+    //   await TestManager.deleteAll();
     // });
 });

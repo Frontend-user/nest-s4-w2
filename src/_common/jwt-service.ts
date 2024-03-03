@@ -1,28 +1,33 @@
+import {JwtService} from "@nestjs/jwt";
+
 const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 import {Injectable} from '@nestjs/common';
 import {UsersQueryRepository} from '../users/repositories/users.query-repository';
 import {Types} from 'mongoose';
+import process from "process";
 
 @Injectable()
-export class JwtService {
-    constructor(protected usersQueryRepository: UsersQueryRepository) {
+export class MyJwtService {
+    constructor( protected jwtService: JwtService) {
     }
 
-    async createJWT(userId: any) {
-        return await jwt.sign({userId: userId}, process.env.JWT_SECRET, {expiresIn: '10m'});
+    async createJWT(payload: { [key: string]: string }, expirationTime: string) {
+        return await this.jwtService.signAsync(payload, {secret: process.env.JWT_SECRET, expiresIn: expirationTime})
     }
 
-    async createRefreshToken(userId: Types.ObjectId | string, newDeviceId: string) {
-        return await jwt.sign(
-            {
-                userId: userId,
-                deviceId: newDeviceId,
-            },
-            process.env.REFRESH_TOKEN_SECRET,
-            {expiresIn: '10h'},
-        );
+    async createRefreshToken(payload: { [key: string]: string }, expirationTime: string) {
+        return await this.jwtService.signAsync(payload, {secret: process.env.REFRESH_TOKEN_SECRET, expiresIn: expirationTime})
+        // async createRefreshToken(payload: { [key: string]: string }, newDeviceId?: string) {
+        // return await jwt.sign(
+        //     {
+        //         userId: userId
+        //         // deviceId: newDeviceId,
+        //     },
+        //     process.env.REFRESH_TOKEN_SECRET,
+        //     {expiresIn: '20s'},
+        // );
     }
 
     // async checkRefreshToken(token: string) {
@@ -58,6 +63,18 @@ export class JwtService {
     //     return;
     //   }
     // }
+
+    async generateSalt(saltNumber: number) {
+        return await bcrypt.genSalt(saltNumber);
+    }
+
+    async generateHash(password: String, salt: string) {
+        const hash = await bcrypt.hash(password, salt);
+        if (hash) {
+            return hash;
+        }
+        return false;
+    }
 
     static async generateSalt(saltNumber: number) {
         return await bcrypt.genSalt(saltNumber);
