@@ -93,27 +93,6 @@ describe('Blogs', () => {
         });
 
     })
-    // new ValidationPipe({
-    //     transform: true,// then you can not do ParseIntPipe
-    //     stopAtFirstError: false,
-    //     exceptionFactory: (errors) => {
-    //         const errorsForResponse = [];
-    //
-    //         errors.forEach((e) => {
-    //
-    //             const constraintsKeys = Object.keys(e.constraints);
-    //             constraintsKeys.forEach((ckey) => {
-    //                 errorsForResponse.push(
-    //                     {
-    //                         message: e.constraints[ckey],
-    //                         field: e.property
-    //                     }
-    //                 );
-    //             });
-    //         });
-    //         throw new BadRequestException(errorsForResponse);
-    //     }
-    // })
 // let blog_1: any;
     // let post_1: any;
     // it('TEST DELETE ALL', async () => {
