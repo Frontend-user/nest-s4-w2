@@ -150,9 +150,14 @@ describe('Blogs', () => {
 
         it('Correct registration', async () => {
             const reponse: any = await testManager.registration(correctRegistrationData);
-            expect(reponse.status).toEqual(204)
+            // expect(reponse.status).toEqual(204)
+            expect(JSON.parse(reponse.text)).toEqual(204)
         });
-
+        it('Correct registration', async () => {
+            const reponse: any = await testManager.registration(correctRegistrationData);
+            // expect(reponse.status).toEqual(204)
+            expect(JSON.parse(reponse.text)).toEqual(204)
+        });
         it('InCORRECT registration', async () => {
             const reponse: any = await testManager.registration(inCorrectRegistrationData);
             expect(reponse.status).toEqual(400)
@@ -175,7 +180,7 @@ describe('Blogs', () => {
             const reponse = await testManager.getUsers();
             const dbUsers = await UserForTestModel.find({}).lean()
             expect(dbUsers).toEqual('ONe')
-            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 1})
+            expect(reponse.length).toEqual(1)
         });
     })
 

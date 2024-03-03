@@ -7,6 +7,7 @@ import {UsersQueryRepository} from "../../users/repositories/users.query-reposit
 import {JSONCookie} from "cookie-parser";
 import {AccessRefreshTokens, LoginOrEmailPasswordModel, RegistrationDataClass} from "../types/auth.types";
 import {HTTP_STATUSES} from "../../_common/constants";
+import {RegistrationGuard} from "../guards/registration.guard";
 
 
 @Controller('/auth')
@@ -32,6 +33,7 @@ export class AuthController {
         throw new Error('Something is not work')
     }
 
+    @UseGuards(RegistrationGuard)
     @Post('/registration')
     async registration(@Request() req, @Response() res, @Body() body:RegistrationDataClass) {
         try {
