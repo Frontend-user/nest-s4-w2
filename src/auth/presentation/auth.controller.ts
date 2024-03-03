@@ -5,7 +5,7 @@ import {AuthService} from "../application/auth.service";
 import {UsersService} from "../../users/application/users.service";
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 import {JSONCookie} from "cookie-parser";
-import {AccessRefreshTokens} from "../types/auth.types";
+import {AccessRefreshTokens, LoginOrEmailPasswordModel} from "../types/auth.types";
 
 
 @Controller('/auth')
@@ -17,11 +17,11 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('/login')
-    async login(@Request() req, @Response() res): Promise<{ accessToken: string } | void> {
+    async login(@Request() req, @Response() res, @Body() body:LoginOrEmailPasswordModel): Promise<{ accessToken: string } | void> {
         const {
             accessToken,
             refreshToken
-        }: AccessRefreshTokens = await this.authService.login(req.user);
+        }: AccessRefreshTokens = await this.authService.login(body);
         if (accessToken && refreshToken) {
 
             res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})

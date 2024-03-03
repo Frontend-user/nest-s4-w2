@@ -13,12 +13,12 @@ export class AuthService {
     ) {
     }
 
-    async validateUser(authData:LoginOrEmailPasswordClass): Promise<{ userId: string } | null> {
-        const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(authData.loginOrEmail)
+    async validateUser(loginOrEmail:string,password:string): Promise<{ userId: string } | null> {
+        const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(loginOrEmail)
         if (getUserForAuth) {
             const passwordSalt = getUserForAuth.passwordSalt
             const passwordHash = getUserForAuth.passwordHash
-            const newPasswordHash = await this.myJwtService.generateHash(authData.password, passwordSalt)
+            const newPasswordHash = await this.myJwtService.generateHash(password, passwordSalt)
             if (newPasswordHash === passwordHash) {
                 return {userId: String(getUserForAuth._id)}
             }
