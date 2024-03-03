@@ -12,7 +12,7 @@ import {UsersQueryRepository} from "./repositories/users.query-repository";
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}])],
     controllers: [UsersController],
     providers: [UsersService, UsersRepository, UsersQueryRepository],
-    exports: [UsersService,UsersQueryRepository]
+    exports: [UsersService,UsersQueryRepository,UsersRepository]
 
 })
 export class UsersModule {

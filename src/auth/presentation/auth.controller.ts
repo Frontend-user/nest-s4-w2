@@ -5,7 +5,8 @@ import {AuthService} from "../application/auth.service";
 import {UsersService} from "../../users/application/users.service";
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 import {JSONCookie} from "cookie-parser";
-import {AccessRefreshTokens, LoginOrEmailPasswordModel} from "../types/auth.types";
+import {AccessRefreshTokens, LoginOrEmailPasswordModel, RegistrationDataClass} from "../types/auth.types";
+import {HTTP_STATUSES} from "../../_common/constants";
 
 
 @Controller('/auth')
@@ -29,6 +30,23 @@ export class AuthController {
             return
         }
         throw new Error('Something is not work')
+    }
+
+    @Post('/registration')
+    async registration(@Request() req, @Response() res, @Body() body:RegistrationDataClass) {
+        try {
+
+            const response = await this.authService.registration(body)
+
+            if (!response) {
+                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
+                return
+            }
+            res.send(204)
+
+        } catch (error) {
+            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
+        }
     }
 
     // @UseGuards(BasicAuthGuard)

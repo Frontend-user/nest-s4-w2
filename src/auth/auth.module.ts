@@ -9,6 +9,8 @@ import {User} from "../users/domain/users-schema";
 import {UsersService} from "../users/application/users.service";
 import {PassportModule} from "@nestjs/passport";
 import {MyJwtService} from "../_common/jwt-service";
+import {UsersRepository} from "../users/repositories/users.repository";
+import {NodemailerService} from "../_common/nodemailer-service";
 
 @Module({
     imports: [
@@ -22,7 +24,7 @@ import {MyJwtService} from "../_common/jwt-service";
         // MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     ],
     controllers: [AuthController],
-    providers: [BasicStrategy, AuthService, LocalStrategy, MyJwtService, JwtService],
+    providers: [BasicStrategy, AuthService, LocalStrategy, MyJwtService, JwtService,NodemailerService],
     exports:[JwtService]
 })
 export class AuthModule {

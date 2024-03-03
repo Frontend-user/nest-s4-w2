@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
 import { MyJwtService } from '../../_common/jwt-service';
 import {CreateUserInputModelType} from "../users.controller";
 
@@ -20,12 +20,12 @@ export class User {
 
   @Prop() passwordHash: string;
 
-  @Prop({ type: SchemaTypes.Mixed, required: true }) emailConfirmation: UserEmailConfirmationModel;
+  @Prop({ type: SchemaTypes.Mixed, required: false }) emailConfirmation: UserEmailConfirmationModel;
 
   @Prop() isConfirmed: boolean;
   @Prop() isCreatedFromAdmin: boolean;
 
-  static async createUserEntity(user: CreateUserInputModelType, isReqFromSuperAdmin: boolean) {
+  static async createUserEntity(user: CreateUserInputModelType, isReqFromSuperAdmin: boolean, confirmationCode?:string,confirmationDate?:Date):Promise<User> {
     const passwordSalt = await MyJwtService.generateSalt(10);
     const passwordHash = await MyJwtService.generateHash(user.password, passwordSalt);
     const userEntity: any = {
@@ -37,11 +37,11 @@ export class User {
       passwordSalt,
       passwordHash,
       emailConfirmation: {
-        confirmationCode: 'superadmin',
-        expirationDate: new Date(),
+        confirmationCode: isReqFromSuperAdmin ?'superadmin': confirmationCode,
+        expirationDate:  isReqFromSuperAdmin ?'superadmin': confirmationDate,
       },
-      isConfirmed: isReqFromSuperAdmin,
-      isCreatedFromAdmin: true,
+      isConfirmed: false,
+      isCreatedFromAdmin: isReqFromSuperAdmin,
     };
 
     return userEntity;
@@ -49,7 +49,7 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
+export const UserForTestModel = mongoose.model('User', UserSchema);
 UserSchema.statics = {
   createUserEntity: User.createUserEntity,
 };

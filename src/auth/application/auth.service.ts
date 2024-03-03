@@ -2,7 +2,18 @@ import {Injectable} from '@nestjs/common';
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 import {MyJwtService} from "../../_common/jwt-service";
 import {JwtService} from "@nestjs/jwt";
-import {AccessRefreshTokens, LoginOrEmailPasswordClass, LoginOrEmailPasswordModel} from "../types/auth.types";
+import {v4 as uuidv4} from 'uuid'
+import {add} from 'date-fns/add';
+
+import {
+    AccessRefreshTokens,
+    LoginOrEmailPasswordClass,
+    LoginOrEmailPasswordModel,
+    RegistrationDataClass
+} from "../types/auth.types";
+import {User} from "../../users/domain/users-schema";
+import {UsersRepository} from "../../users/repositories/users.repository";
+import {NodemailerService} from "../../_common/nodemailer-service";
 
 @Injectable()
 export class AuthService {
@@ -10,10 +21,12 @@ export class AuthService {
         private readonly myJwtService: MyJwtService,
         private readonly jwtService: JwtService,
         private readonly usersQueryRepository: UsersQueryRepository,
+        private readonly usersRepository: UsersRepository,
+        private readonly nodemailerService: NodemailerService,
     ) {
     }
 
-    async validateUser(loginOrEmail:string,password:string): Promise<{ userId: string } | null> {
+    async validateUser(loginOrEmail: string, password: string): Promise<{ userId: string } | null> {
         const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(loginOrEmail)
         if (getUserForAuth) {
             const passwordSalt = getUserForAuth.passwordSalt
@@ -26,7 +39,7 @@ export class AuthService {
         return null;
     }
 
-    async login(user: any):Promise<AccessRefreshTokens> {
+    async login(user: any): Promise<AccessRefreshTokens> {
         const payload = {userId: user.userId};
         const payloadForRefreshToken = {userId: user.userId};
         const accessToken = await this.myJwtService.createJWT(payload, '10s')
@@ -36,4 +49,22 @@ export class AuthService {
             refreshToken
         };
     }
+
+
+    async registration(userInputData: RegistrationDataClass) {
+        const passwordSalt = await this.myJwtService.generateSalt(10)
+        const passwordHash = await this.myJwtService.generateHash(userInputData.password, passwordSalt)
+        const confirmationCode = uuidv4()
+        const confirmationDate = add(new Date(), {hours: 1, minutes: 3})
+        const userEmailEntity: User = await User.createUserEntity(userInputData, false, confirmationCode, confirmationDate)
+
+        const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email)
+        if (mailSendResponse) {
+        const userId = await this.usersRepository.createUser(userEmailEntity)
+        return !!userId
+        }
+        return false
+
+    }
+
 }

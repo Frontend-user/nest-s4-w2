@@ -5,7 +5,7 @@ import { User, UserDocumentType } from '../domain/users-schema';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) public userModel: Model<User>) {}
 
   async createUser(user: any): Promise<UserDocumentType | false> {
     const response = new this.userModel(user);

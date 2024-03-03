@@ -1,4 +1,4 @@
-import {IsString, Length} from "class-validator";
+import {IsEmail, IsString, Length} from "class-validator";
 
 export type AccessRefreshTokens = {
     accessToken:string
@@ -7,18 +7,32 @@ export type AccessRefreshTokens = {
 export class LoginOrEmailPasswordClass  {
     @Length(3)
     @IsString()
-    loginOrEmail: String
+    loginOrEmail: string
 
     @IsString()
     @Length(6,20)
-    password: String
+    password: string
 }
 export class LoginOrEmailPasswordModel  {
     @Length(3)
     @IsString()
-    loginOrEmail: String
+    loginOrEmail: string
 
     @IsString()
     @Length(6,20)
-    password: String
+    password: string
+}
+
+export class RegistrationDataClass {
+    @Length(3, 9)
+    @IsString()
+    login: string
+
+    @IsEmail()
+    email: string
+
+
+    @IsString()
+    @Length(6,20)
+    password: string
 }

@@ -1,5 +1,6 @@
 import request from 'supertest';
 import {INestApplication} from '@nestjs/common';
+import {correctRegistrationData} from "./registration.data";
 
 export const correctBlogData = {
     name: 'name',
@@ -196,4 +197,12 @@ export class TestManager {
         // return JSON.parse(response.text)
         return  response
     }
+
+    async registration(data){
+        const response = await request(this.httpServer)
+            .post('/auth/registration')
+            .send(data)
+        return response
+    }
+
 }

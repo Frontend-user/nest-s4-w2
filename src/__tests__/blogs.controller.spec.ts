@@ -7,6 +7,9 @@ import {BlogsController} from '../blogs/blogs.controller';
 import request from "supertest";
 import {appSettings} from "../app.settings";
 import {AuthController} from "../auth/presentation/auth.controller";
+import {correctRegistrationData, inCorrectRegistrationData} from "./registration.data";
+import {UserForTestModel, UserSchema} from "../users/domain/users-schema";
+import {UsersRepository} from "../users/repositories/users.repository";
 
 describe('Blogs', () => {
     let app: INestApplication;
@@ -15,12 +18,12 @@ describe('Blogs', () => {
     let httpServer
 
     beforeAll(async () => {
-        const moduleFixture:TestingModule = await Test.createTestingModule({
+        const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).overrideProvider(AuthController).useClass(AuthController).compile()  // .useValue({
-            //     s: 'q',
-            // })
-            // .compile();
+        //     s: 'q',
+        // })
+        // .compile();
         // app = moduleRef.createNestApplication();
         //
         app = moduleFixture.createNestApplication()
@@ -28,7 +31,7 @@ describe('Blogs', () => {
         await app.init();
 
         httpServer = app.getHttpServer()
-        testManager = new TestManager(app,httpServer);
+        testManager = new TestManager(app, httpServer);
 
     });
 
@@ -105,7 +108,7 @@ describe('Blogs', () => {
             expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
         });
 
-        const  loginCorrectData = {
+        const loginCorrectData = {
             loginOrEmail: "login",
             password: "password"
         }
@@ -121,9 +124,9 @@ describe('Blogs', () => {
             uses1_id = reponse.id
         });
 
-let refreshToken:string
+        let refreshToken: string
         it('Login created user by superadmin', async () => {
-            const reponse:any = await testManager.loginCreatedUserBySuperAdmin(loginCorrectData);
+            const reponse: any = await testManager.loginCreatedUserBySuperAdmin(loginCorrectData);
             refreshToken = reponse.header['set-cookie']
             expect(JSON.parse(reponse.text)).toEqual('accesstokem')
         });
@@ -134,68 +137,111 @@ let refreshToken:string
         });
     })
 
-let blog_1: any;
-    let post_1: any;
-    it('TEST DELETE ALL', async () => {
-      await testManager.deleteAll();
-    });
-    it(`CREATE BLOG`, async () => {
-      blog_1 = await testManager.createBlog();
-      expect(blog_1).toEqual('s');
-    });
 
-    it(`CREATE POST BY BLOG ID`, async () => {
-      post_1 = await testManager.craetePostByBlogId(blog_1.id);
-      console.log(post_1, 'post create by blogid');
-      expect(post_1).toEqual('s');
-    });
+    describe('Registration', () => {
+        it('TEST DELETE ALL', async () => {
+            await testManager.deleteAll();
+        });
 
-    it(`Delete POST`, async () => {
-      const result = await testManager.deletePost(post_1.id);
-      console.log(result, 'post create by blogid');
-      expect(result).toEqual('s');
-    });
+        it('get users', async () => {
+            const reponse = await testManager.getUsers();
+            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
+        });
 
-    it(`Get POSTs BY BLOG ID`, async () => {
-      await testManager.getPostsByBlogId(blog_1.id);
-      console.log(blog_1, 'blogid');
-    });
+        it('Correct registration', async () => {
+            const reponse: any = await testManager.registration(correctRegistrationData);
+            expect(reponse.status).toEqual(204)
+        });
 
-    it(`create Post in posts`, async () => {
-      const response: any = await testManager.createPostInPost(blog_1.id);
-      expect(response).toEqual('s');
-      console.log(response, 'response');
-    });
+        it('InCORRECT registration', async () => {
+            const reponse: any = await testManager.registration(inCorrectRegistrationData);
+            expect(reponse.status).toEqual(400)
+            expect(JSON.parse(reponse.text)).toEqual({
+                errorsMessages: [
+                    {
+                        message: expect.any(String),
+                        field: expect.any(String)
+                    }, {
+                        message: expect.any(String),
+                        field: expect.any(String)
+                    }, {
+                        message: expect.any(String),
+                        field: expect.any(String)
+                    },
+                ]
+            })
+        });
+        it('get users', async () => {
+            const reponse = await testManager.getUsers();
+            const dbUsers = await UserForTestModel.find({}).lean()
+            expect(dbUsers).toEqual('ONe')
+            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 1})
+        });
+    })
 
-    it(`create Post in posts`, async () => {
-      let postUp = await testManager.updatePost('s', blog_1.id);
-      expect(postUp).toEqual('s');
-    });
 
-    it(`CREATE BLOG`, async () => {
-      blog_1 = await testManager.createBlog('aaaa');
-      console.log(blog_1, 'createBlog');
-    });
-
-    it(`CREATE BLOG`, async () => {
-      blog_1 = await testManager.createBlog('bbbb');
-      console.log(blog_1, 'createBlog');
-    });
-
-    it(`CREATE BLOG`, async () => {
-      blog_1 = await testManager.createBlog('cccc');
-      console.log(blog_1, 'createBlog');
-    });
-
-    it(`GET BLOGssss`, async () => {
-      const allBlogs: any = await testManager.getBlogs('','name','asc',);
-      // let s :any[]= [];
-      // allBlogs.items.forEach((i:any) => {
-      //   s.push(i.name);
-      // });
-      expect(allBlogs).toEqual('fsdfdssdf');
-
-    });
+    // let blog_1: any;
+    // let post_1: any;
+    // it('TEST DELETE ALL', async () => {
+    //     await testManager.deleteAll();
+    // });
+    // it(`CREATE BLOG`, async () => {
+    //     blog_1 = await testManager.createBlog();
+    //     expect(blog_1).toEqual('s');
+    // });
+    //
+    // it(`CREATE POST BY BLOG ID`, async () => {
+    //     post_1 = await testManager.craetePostByBlogId(blog_1.id);
+    //     console.log(post_1, 'post create by blogid');
+    //     expect(post_1).toEqual('s');
+    // });
+    //
+    // it(`Delete POST`, async () => {
+    //     const result = await testManager.deletePost(post_1.id);
+    //     console.log(result, 'post create by blogid');
+    //     expect(result).toEqual('s');
+    // });
+    //
+    // it(`Get POSTs BY BLOG ID`, async () => {
+    //     await testManager.getPostsByBlogId(blog_1.id);
+    //     console.log(blog_1, 'blogid');
+    // });
+    //
+    // it(`create Post in posts`, async () => {
+    //     const response: any = await testManager.createPostInPost(blog_1.id);
+    //     expect(response).toEqual('s');
+    //     console.log(response, 'response');
+    // });
+    //
+    // it(`create Post in posts`, async () => {
+    //     let postUp = await testManager.updatePost('s', blog_1.id);
+    //     expect(postUp).toEqual('s');
+    // });
+    //
+    // it(`CREATE BLOG`, async () => {
+    //     blog_1 = await testManager.createBlog('aaaa');
+    //     console.log(blog_1, 'createBlog');
+    // });
+    //
+    // it(`CREATE BLOG`, async () => {
+    //     blog_1 = await testManager.createBlog('bbbb');
+    //     console.log(blog_1, 'createBlog');
+    // });
+    //
+    // it(`CREATE BLOG`, async () => {
+    //     blog_1 = await testManager.createBlog('cccc');
+    //     console.log(blog_1, 'createBlog');
+    // });
+    //
+    // it(`GET BLOGssss`, async () => {
+    //     const allBlogs: any = await testManager.getBlogs('', 'name', 'asc',);
+    //     // let s :any[]= [];
+    //     // allBlogs.items.forEach((i:any) => {
+    //     //   s.push(i.name);
+    //     // });
+    //     expect(allBlogs).toEqual('fsdfdssdf');
+    //
+    // });
     // it(`GET BLOG`, async () => {
     //   const getBlog: any = await testManager.getBlog(blog_1!.id);
     //   console.log(getBlog, 'getBLog');
