@@ -25,7 +25,7 @@ export class AuthController {
         if (accessToken && refreshToken) {
 
             res.cookie('refreshToken', refreshToken, {httpOnly: true, secure: true})
-            res.send({accessToken})
+            res.status(201).send({accessToken})
             return
         }
         throw new Error('Something is not work')
