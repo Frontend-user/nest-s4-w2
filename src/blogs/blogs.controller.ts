@@ -30,6 +30,7 @@ export class BlogsController {
     @Query('pageNumber') pageNumber?: number,
     @Query('pageSize') pageSize?: number,
   ) {
+    debugger
     const { skip, limit, newPageNumber, newPageSize, sortParams } = QueryUtilsClass.getPagination(
       pageNumber,
       pageSize,

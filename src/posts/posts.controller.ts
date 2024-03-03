@@ -91,7 +91,6 @@ export class PostsController {
 
   @Put('/:id')
   async updatePost(@Res() res, @Body() body: PostInputCreateModel, @Param('id') id: string) {
-    debugger;
     try {
       const response: boolean = await this.postsService.updatePost(id, body);
       res.sendStatus(response ? HTTP_STATUSES.NO_CONTENT_204 : HTTP_STATUSES.NOT_FOUND_404);

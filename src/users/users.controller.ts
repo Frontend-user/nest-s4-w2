@@ -48,8 +48,7 @@ export class UsersController {
         @Query('pageSize') pageSize?: number,
     ) {
         try {
-            debugger
-            const {skip, limit, newPageNumber, newPageSize} = QueryUtilsClass.getPagination(
+           const {skip, limit, newPageNumber, newPageSize} = QueryUtilsClass.getPagination(
                 pageNumber,
                 pageSize,
             );

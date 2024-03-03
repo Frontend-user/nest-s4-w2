@@ -87,75 +87,74 @@ describe('Blogs', () => {
             const reponse = await testManager.deleteUserBySuperAdmin(uses1_id);
             expect(reponse).toEqual(204)
         });
-
         it('get users', async () => {
             const reponse = await testManager.getUsers();
             expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
         });
 
     })
-// let blog_1: any;
-    // let post_1: any;
-    // it('TEST DELETE ALL', async () => {
-    //   await testManager.deleteBlog();
-    // });
-    // it(`CREATE BLOG`, async () => {
-    //   blog_1 = await testManager.createBlog();
-    //   expect(blog_1).toEqual('s');
-    // });
-    //
-    // it(`CREATE POST BY BLOG ID`, async () => {
-    //   post_1 = await testManager.craetePostByBlogId(blog_1.id);
-    //   console.log(post_1, 'post create by blogid');
-    //   expect(post_1).toEqual('s');
-    // });
-    //
-    // it(`Delete POST`, async () => {
-    //   const result = await testManager.deletePost(post_1.id);
-    //   console.log(result, 'post create by blogid');
-    //   expect(result).toEqual('s');
-    // });
-    //
-    // it(`Get POSTs BY BLOG ID`, async () => {
-    //   await testManager.getPostsByBlogId(blog_1.id);
-    //   console.log(blog_1, 'blogid');
-    // });
-    //
-    // it(`create Post in posts`, async () => {
-    //   const response: any = await testManager.createPostInPost(blog_1.id);
-    //   expect(response).toEqual('s');
-    //   console.log(response, 'response');
-    // });
-    //
-    // it(`create Post in posts`, async () => {
-    //   let postUp = await testManager.updatePost('s', blog_1.id);
-    //   expect(postUp).toEqual('s');
-    // });
+let blog_1: any;
+    let post_1: any;
+    it('TEST DELETE ALL', async () => {
+      await testManager.deleteBlog();
+    });
+    it(`CREATE BLOG`, async () => {
+      blog_1 = await testManager.createBlog();
+      expect(blog_1).toEqual('s');
+    });
 
-    // it(`CREATE BLOG`, async () => {
-    //   blog_1 = await testManager.createBlog('aaaa');
-    //   console.log(blog_1, 'createBlog');
-    // });
+    it(`CREATE POST BY BLOG ID`, async () => {
+      post_1 = await testManager.craetePostByBlogId(blog_1.id);
+      console.log(post_1, 'post create by blogid');
+      expect(post_1).toEqual('s');
+    });
 
-    // it(`CREATE BLOG`, async () => {
-    //   blog_1 = await testManager.createBlog('bbbb');
-    //   console.log(blog_1, 'createBlog');
-    // });
+    it(`Delete POST`, async () => {
+      const result = await testManager.deletePost(post_1.id);
+      console.log(result, 'post create by blogid');
+      expect(result).toEqual('s');
+    });
 
-    // it(`CREATE BLOG`, async () => {
-    //   blog_1 = await testManager.createBlog('cccc');
-    //   console.log(blog_1, 'createBlog');
-    // });
+    it(`Get POSTs BY BLOG ID`, async () => {
+      await testManager.getPostsByBlogId(blog_1.id);
+      console.log(blog_1, 'blogid');
+    });
 
-    // it(`GET BLOGssss`, async () => {
-    //   const allBlogs: any = await testManager.getBlogs('','name','asc',2,1);
-    //   // let s :any[]= [];
-    //   // allBlogs.items.forEach((i:any) => {
-    //   //   s.push(i.name);
-    //   // });
-    //   expect(allBlogs).toEqual('fsdfdssdf');
-    //
-    // });
+    it(`create Post in posts`, async () => {
+      const response: any = await testManager.createPostInPost(blog_1.id);
+      expect(response).toEqual('s');
+      console.log(response, 'response');
+    });
+
+    it(`create Post in posts`, async () => {
+      let postUp = await testManager.updatePost('s', blog_1.id);
+      expect(postUp).toEqual('s');
+    });
+
+    it(`CREATE BLOG`, async () => {
+      blog_1 = await testManager.createBlog('aaaa');
+      console.log(blog_1, 'createBlog');
+    });
+
+    it(`CREATE BLOG`, async () => {
+      blog_1 = await testManager.createBlog('bbbb');
+      console.log(blog_1, 'createBlog');
+    });
+
+    it(`CREATE BLOG`, async () => {
+      blog_1 = await testManager.createBlog('cccc');
+      console.log(blog_1, 'createBlog');
+    });
+
+    it(`GET BLOGssss`, async () => {
+      const allBlogs: any = await testManager.getBlogs('','name','asc',);
+      // let s :any[]= [];
+      // allBlogs.items.forEach((i:any) => {
+      //   s.push(i.name);
+      // });
+      expect(allBlogs).toEqual('fsdfdssdf');
+
+    });
     // it(`GET BLOG`, async () => {
     //   const getBlog: any = await testManager.getBlog(blog_1!.id);
     //   console.log(getBlog, 'getBLog');
