@@ -3,6 +3,11 @@ import { JwtService } from '../../_common/jwt-service';
 import { PostsQueryRepository } from '../../posts/repositories/posts.query-repository';
 import { User, UserCreateModel, UserDocumentType } from '../domain/users-schema';
 import { Injectable } from '@nestjs/common';
+import {IsEmail, IsInt, Length} from "class-validator";
+import {CreateUserInputModelType} from "../users.controller";
+
+
+
 
 @Injectable()
 export class UsersService {
@@ -12,7 +17,7 @@ export class UsersService {
   ) {}
 
   async createUser(
-    user: UserCreateModel,
+    user: CreateUserInputModelType,
     isReqFromSuperAdmin: boolean,
   ): Promise<UserDocumentType | false> {
     const userEmailEntity: User = await User.createUserEntity(user, isReqFromSuperAdmin);

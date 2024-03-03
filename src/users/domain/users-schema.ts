@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes } from 'mongoose';
 import { JwtService } from '../../_common/jwt-service';
+import {CreateUserInputModelType} from "../users.controller";
 
 export type UserDocumentType = HydratedDocument<User>;
 export type UserAccountDBMethodsType = {
@@ -24,7 +25,7 @@ export class User {
   @Prop() isConfirmed: boolean;
   @Prop() isCreatedFromAdmin: boolean;
 
-  static async createUserEntity(user: UserCreateModel, isReqFromSuperAdmin: boolean) {
+  static async createUserEntity(user: CreateUserInputModelType, isReqFromSuperAdmin: boolean) {
     const passwordSalt = await JwtService.generateSalt(10);
     const passwordHash = await JwtService.generateHash(user.password, passwordSalt);
     const userEntity: any = {
