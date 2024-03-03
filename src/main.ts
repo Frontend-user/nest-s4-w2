@@ -6,7 +6,7 @@ import {appSettings} from "./app.settings";
 
 export async function bootstrap() {
     const app = await NestFactory.create(AppModule);
-   await appSettings(app)
+   appSettings(app)
     // app.enableCors();
 
     // app.useGlobalPipes(new ValidationPipe())
@@ -14,4 +14,4 @@ export async function bootstrap() {
     await app.listen(3000);
 }
 
- bootstrap();
+bootstrap();
