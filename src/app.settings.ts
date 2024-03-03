@@ -3,8 +3,9 @@ import cookieParser from 'cookie-parser';
 import {useContainer} from "class-validator";
 import {AppModule} from "./app.module";
 
-export const appSettings = (app: INestApplication) => {
+export const  appSettings = async (app: INestApplication) => {
     app.use(cookieParser())
+    app.enableCors()
     useContainer(app.select(AppModule), {fallbackOnErrors: true});
     app.useGlobalPipes(new ValidationPipe(
         {
@@ -26,7 +27,6 @@ export const appSettings = (app: INestApplication) => {
                         })
                     }
                 })
-                console.log(errors[0].constraints, '0].constraints')
                 // errors.forEach((e) => {
                 //     const constraintKeys = Object.keys(e.constraints)
                 //     constraintKeys.forEach((ckey) => {
@@ -44,6 +44,5 @@ export const appSettings = (app: INestApplication) => {
 
         }
     ))
-    app.enableCors()
     // app.useGlobalFilters()///
 }

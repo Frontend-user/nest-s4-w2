@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "Nest.js #2",
+  "name": "Nest.js #3",
   "builds": [
     { "src": "src/main.ts", "use": "@vercel/node" }
   ],

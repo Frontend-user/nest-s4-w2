@@ -87,7 +87,7 @@ describe('Blogs', () => {
             const reponse = await testManager.deleteUserBySuperAdmin(uses1_id);
             expect(reponse).toEqual(204)
         });
-        
+
         it('get users', async () => {
             const reponse = await testManager.getUsers();
             expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
