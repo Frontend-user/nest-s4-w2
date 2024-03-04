@@ -1,4 +1,5 @@
-import {IsEmail, IsString, Length} from "class-validator";
+import {IsEmail, IsString, Length, Validate} from "class-validator";
+import {IsConfirmationCodeValid} from "../pipes/confirm-code.pipe";
 
 export type AccessRefreshTokens = {
     accessToken: string
@@ -42,5 +43,9 @@ export class RegistrationDataClass {
 export class EmailValidClass {
     @IsEmail()
     email: string
+}
+
+export class ConfirmationCodeClass {
+    @IsConfirmationCodeValid()  code: string
 
 }

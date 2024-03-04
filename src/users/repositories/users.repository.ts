@@ -20,6 +20,13 @@ export class UsersRepository {
         return response.deletedCount === 1 ? true : false;
     }
 
+    async updateIsConfirmed(code: string, isConfirmed: boolean) {
+        const response = await this.userModel.findOneAndUpdate({'emailConfirmation.confirmationCode': code},
+            {isConfirmed: isConfirmed}
+        )
+        return response ? response : null
+    }
+
     async updateUserConfirmationCode(userId: string, newConfirmationCode: string): Promise<null | UserDocumentType> {
         const response = await this.userModel.findOneAndUpdate({_id: new Types.ObjectId(userId)},
             {'emailConfirmation.confirmationCode': newConfirmationCode}

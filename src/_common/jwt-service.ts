@@ -1,11 +1,7 @@
 import {JwtService} from "@nestjs/jwt";
-
 const bcrypt = require('bcrypt');
-
 const jwt = require('jsonwebtoken');
 import {Injectable} from '@nestjs/common';
-import {UsersQueryRepository} from '../users/repositories/users.query-repository';
-import {Types} from 'mongoose';
 import process from "process";
 
 @Injectable()

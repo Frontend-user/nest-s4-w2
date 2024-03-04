@@ -11,6 +11,7 @@ import {PassportModule} from "@nestjs/passport";
 import {MyJwtService} from "../_common/jwt-service";
 import {UsersRepository} from "../users/repositories/users.repository";
 import {NodemailerService} from "../_common/nodemailer-service";
+import { IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
 
 @Module({
     imports: [
@@ -24,7 +25,9 @@ import {NodemailerService} from "../_common/nodemailer-service";
         // MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
     ],
     controllers: [AuthController],
-    providers: [BasicStrategy, AuthService, LocalStrategy, MyJwtService, JwtService,NodemailerService],
+    providers: [BasicStrategy, AuthService, LocalStrategy,
+        MyJwtService, JwtService,NodemailerService,
+        IsConfirmationCodeValidConstraint],
     exports:[JwtService]
 })
 export class AuthModule {

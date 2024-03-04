@@ -6,7 +6,7 @@ import {v4 as uuidv4} from 'uuid'
 import {add} from 'date-fns/add';
 
 import {
-    AccessRefreshTokens,
+    AccessRefreshTokens, ConfirmationCodeClass,
     LoginOrEmailPasswordClass,
     LoginOrEmailPasswordModel,
     RegistrationDataClass
@@ -14,6 +14,7 @@ import {
 import {User} from "../../users/domain/users-schema";
 import {UsersRepository} from "../../users/repositories/users.repository";
 import {NodemailerService} from "../../_common/nodemailer-service";
+
 
 @Injectable()
 export class AuthService {
@@ -60,11 +61,22 @@ export class AuthService {
 
         const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email)
         if (mailSendResponse) {
-            const userId = await this.usersRepository.createUser(userEmailEntity)
-            return !!userId
+        const userId = await this.usersRepository.createUser(userEmailEntity)
+        return !!userId
+        // return confirmationCode
         }
         return false
 
+    }
+
+
+    async registrationConfirmation(code: string): Promise<boolean> {
+            const updateIsConfirmed = await this.usersRepository.updateIsConfirmed(code, true)
+
+            if (updateIsConfirmed) {
+                return true
+            }
+            return false
     }
 
     async registrationEmailResending(email: string) {
@@ -74,6 +86,7 @@ export class AuthService {
             const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
             if (isUpdateUser) {
                 await this.nodemailerService.send(newConfirmationCode, email)
+                // return newConfirmationCode
                 return true
             } else {
                 return false

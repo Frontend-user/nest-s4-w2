@@ -10,8 +10,13 @@ export class UsersQueryRepository {
     constructor(@InjectModel('User') private userModel: Model<User> & createUserEntity) {
     }
 
-    async getUserByEmailOrLogin(loginOrEmail: String): Promise<UserDocumentType  | null> {
-        const response:UserDocumentType | null = await this.userModel.findOne({$or: [{'accountData.login': loginOrEmail}, {'accountData.email': loginOrEmail}]}).lean()
+    async getUserByEmailOrLogin(loginOrEmail: String): Promise<UserDocumentType | null> {
+        const response: UserDocumentType | null = await this.userModel.findOne({$or: [{'accountData.login': loginOrEmail}, {'accountData.email': loginOrEmail}]}).lean()
+        return response ? response : null
+    }
+
+ async getUserEmailByConfirmCode(code: string): Promise<UserDocumentType | null> {
+        const response: UserDocumentType | null = await this.userModel.findOne({'emailConfirmation.confirmationCode': code}).lean()
         return response ? response : null
     }
 

@@ -213,6 +213,13 @@ export class TestManager {
         return response
     }
 
+    async registrationConfirmation(data){
+        const response = await request(this.httpServer)
+            .post('/auth/registration-confirmation')
+            .send({code:data})
+        return response
+    }
+
 
 
 }

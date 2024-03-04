@@ -1,6 +1,6 @@
 import {correctBlogData, correctUser1, TestManager} from './test-manager.spec';
 import mongoose from 'mongoose';
-import {INestApplication} from '@nestjs/common';
+import {HttpStatus, INestApplication} from '@nestjs/common';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from '../app.module';
 import {BlogsController} from '../blogs/blogs.controller';
@@ -10,6 +10,7 @@ import {AuthController} from "../auth/presentation/auth.controller";
 import {correctRegistrationData, inCorrectRegistrationData} from "./registration.data";
 import {UserForTestModel, UserSchema} from "../users/domain/users-schema";
 import {UsersRepository} from "../users/repositories/users.repository";
+import {HTTP_STATUSES} from "../_common/constants";
 
 describe('Blogs', () => {
     let app: INestApplication;
@@ -147,16 +148,17 @@ describe('Blogs', () => {
             const reponse = await testManager.getUsers();
             expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
         });
-
+        let confirmationCode: any
         it('Correct registration', async () => {
             const reponse: any = await testManager.registration(correctRegistrationData);
+            confirmationCode = JSON.parse(reponse.text).confirmationCode
             // expect(reponse.status).toEqual(204)
-            expect(JSON.parse(reponse.text)).toEqual(204)
+            expect(confirmationCode).toEqual(204)
         });
-        it('Correct registration', async () => {
+        it('IS EXIST Correct registration', async () => {
             const reponse: any = await testManager.registration(correctRegistrationData);
             // expect(reponse.status).toEqual(204)
-            expect(JSON.parse(reponse.text)).toEqual(204)
+            expect(reponse.text).toEqual(204)
         });
         it('InCORRECT registration', async () => {
             const reponse: any = await testManager.registration(inCorrectRegistrationData);
@@ -177,17 +179,29 @@ describe('Blogs', () => {
             })
         });
 
+        it(' registrationConfirmation should true', async () => {
+            const reponse: any = await testManager.registrationConfirmation(confirmationCode);
+            const dbUsers = await UserForTestModel.find({}).lean()
+            // expect(dbUsers).toEqual('ONe')
+            expect(JSON.parse(reponse.text)).toEqual(204)
+        });
+        it(' registrationConfirmation should FALSE', async () => {
+            const reponse: any = await testManager.registrationConfirmation(confirmationCode);
+            const dbUsers = await UserForTestModel.find({}).lean()
+            // expect(dbUsers).toEqual('ONe')
+            expect(JSON.parse(reponse.text)).toEqual(204)
+        });
         it(' registrationEmailResending should true', async () => {
             const reponse: any = await testManager.registrationEmailResending(correctRegistrationData.email);
             // expect(reponse).toEqual(204)
-            expect(JSON.parse(reponse.status)).toEqual(204)
+            expect(JSON.parse(reponse.text)).toEqual(204)
         });
 
 
         it(' registrationEmailResending should false', async () => {
             const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
             // expect(reponse).toEqual('s')
-            expect(JSON.parse(reponse.status)).toEqual(400)
+            expect(JSON.parse(reponse.text)).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
         });
 
         it('get users', async () => {

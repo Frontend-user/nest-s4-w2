@@ -1,12 +1,8 @@
 import {Body, Controller, Get, Param, Post, Res, Request, Response, UseGuards} from "@nestjs/common";
-import {BasicAuthGuard} from "../guards/basic-auth.guart";
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../application/auth.service";
-import {UsersService} from "../../users/application/users.service";
-import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
-import {JSONCookie} from "cookie-parser";
 import {
-    AccessRefreshTokens,
+    AccessRefreshTokens, ConfirmationCodeClass,
     EmailValidClass,
     LoginOrEmailPasswordModel,
     RegistrationDataClass
@@ -51,6 +47,8 @@ export class AuthController {
                 res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
                 return
             }
+
+            // res.send({confirmationCode:response})
             res.send(204)
 
         } catch (error) {
@@ -68,12 +66,31 @@ export class AuthController {
                 return
             }
 
+            // res.status(204).send({confirmationCode:response})
             res.sendStatus(204)
 
         } catch (error) {
             res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
         }
     }
+
+    // @UseGuards(CodeConfirmGuard)
+    @Post('/registration-confirmation')
+    async registrationConfirmation(@Body() body: ConfirmationCodeClass, @Response() res)  {
+        try {
+            const response = await this.authService.registrationConfirmation(body.code)
+            if (!response) {
+                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
+                return
+            }
+
+            res.send(204)
+
+        } catch (error) {
+            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
+        }
+    }
+
 
     // @UseGuards(BasicAuthGuard)
     @Get('/test')
