@@ -60,11 +60,27 @@ export class AuthService {
 
         const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email)
         if (mailSendResponse) {
-        const userId = await this.usersRepository.createUser(userEmailEntity)
-        return !!userId
+            const userId = await this.usersRepository.createUser(userEmailEntity)
+            return !!userId
         }
         return false
 
+    }
+
+    async registrationEmailResending(email: string) {
+        const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(email)
+        if (getUserForAuth) {
+            const newConfirmationCode = uuidv4()
+            const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
+            if (isUpdateUser) {
+                await this.nodemailerService.send(newConfirmationCode, email)
+                return true
+            } else {
+                return false
+            }
+
+        }
+        return false
     }
 
 }

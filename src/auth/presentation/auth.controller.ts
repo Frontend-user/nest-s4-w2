@@ -5,7 +5,12 @@ import {AuthService} from "../application/auth.service";
 import {UsersService} from "../../users/application/users.service";
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 import {JSONCookie} from "cookie-parser";
-import {AccessRefreshTokens, LoginOrEmailPasswordModel, RegistrationDataClass} from "../types/auth.types";
+import {
+    AccessRefreshTokens,
+    EmailValidClass,
+    LoginOrEmailPasswordModel,
+    RegistrationDataClass
+} from "../types/auth.types";
 import {HTTP_STATUSES} from "../../_common/constants";
 import {RegistrationGuard} from "../guards/registration.guard";
 
@@ -19,7 +24,9 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('/login')
-    async login(@Request() req, @Response() res, @Body() body:LoginOrEmailPasswordModel): Promise<{ accessToken: string } | void> {
+    async login(@Request() req, @Response() res, @Body() body: LoginOrEmailPasswordModel): Promise<{
+        accessToken: string
+    } | void> {
         const {
             accessToken,
             refreshToken
@@ -35,7 +42,7 @@ export class AuthController {
 
     @UseGuards(RegistrationGuard)
     @Post('/registration')
-    async registration(@Request() req, @Response() res, @Body() body:RegistrationDataClass) {
+    async registration(@Request() req, @Response() res, @Body() body: RegistrationDataClass) {
         try {
 
             const response = await this.authService.registration(body)
@@ -51,10 +58,27 @@ export class AuthController {
         }
     }
 
+    @Post('/registration-email-resending')
+    async registrationEmailResending(@Body() body: EmailValidClass, @Response() res) {
+        try {
+
+            const response = await this.authService.registrationEmailResending(body.email)
+            if (!response) {
+                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
+                return
+            }
+
+            res.sendStatus(204)
+
+        } catch (error) {
+            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
+        }
+    }
+
     // @UseGuards(BasicAuthGuard)
     @Get('/test')
     async testF(@Request() req) {
-        console.log(req.headers.cookie,'olggggggggggggggg')
+        console.log(req.headers.cookie, 'olggggggggggggggg')
         return {refreshToken: req.header.cookie}
     }
 }

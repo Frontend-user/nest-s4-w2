@@ -176,6 +176,20 @@ describe('Blogs', () => {
                 ]
             })
         });
+
+        it(' registrationEmailResending should true', async () => {
+            const reponse: any = await testManager.registrationEmailResending(correctRegistrationData.email);
+            // expect(reponse).toEqual(204)
+            expect(JSON.parse(reponse.status)).toEqual(204)
+        });
+
+
+        it(' registrationEmailResending should false', async () => {
+            const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
+            // expect(reponse).toEqual('s')
+            expect(JSON.parse(reponse.status)).toEqual(400)
+        });
+
         it('get users', async () => {
             const reponse = await testManager.getUsers();
             const dbUsers = await UserForTestModel.find({}).lean()

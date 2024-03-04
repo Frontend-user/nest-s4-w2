@@ -205,4 +205,14 @@ export class TestManager {
         return response
     }
 
+
+    async registrationEmailResending(data){
+        const response = await request(this.httpServer)
+            .post('/auth/registration-email-resending')
+            .send({email:data})
+        return response
+    }
+
+
+
 }
