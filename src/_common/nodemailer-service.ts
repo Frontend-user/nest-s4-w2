@@ -18,10 +18,10 @@ export class NodemailerService  {
                 from: '"Fred Foo 👻" <robersargsyan2023@gmail.com>',
                 to: emailToSend,
                 subject: "Hello ✔",
-                text: `Hello world?${RESENDING}`,
+                text: `Hello world?`,
                 html: ` <h1>Thank for your registration</h1>
  <p>To finish registration please follow the link below:
- ${confirmationCode}
+ ${confirmationCode}///${RESENDING}
      <a href='https://somesite.com/confirm-email?code=${confirmationCode}'>complete registration</a>
  </p>
 `,
