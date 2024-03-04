@@ -60,7 +60,7 @@ export class AuthService {
             throw new HttpException({field: 'login', message: 'login is exist'}, 400)
         }
         if (isExistEmail) {
-            throw new HttpException({field: 'email', message: 'email is exist'},400)
+            throw new HttpException({field: 'email', message: 'email is exist'}, 400)
         }
         // const confirmationCode = '1234'
         const confirmationCode = uuidv4()
@@ -79,13 +79,13 @@ export class AuthService {
 
     async registrationConfirmation(code: string): Promise<boolean> {
         const getUser = await this.usersQueryRepository.getUserEmailByConfirmCode(code)
-        if(getUser){
-            if(getUser.isConfirmed){
-                throw new HttpException({ message: 'code is confirmed', field: 'code'},400)
+        if (getUser) {
+            if (getUser.isConfirmed) {
+                throw new HttpException({message: 'code is confirmed', field: 'code'}, 400)
 
             }
-            if(!getUser.isConfirmed){
-                 await this.usersRepository.updateIsConfirmed(code, true)
+            if (!getUser.isConfirmed) {
+                await this.usersRepository.updateIsConfirmed(code, true)
                 return true
             }
 
@@ -111,22 +111,35 @@ export class AuthService {
 
     async registrationEmailResending(email: string) {
         const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(email)
-        if (getUserForAuth) {
-            if (getUserForAuth.isConfirmed) {
-                return false
-            }
-            const newConfirmationCode = uuidv4()
-            const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
-            if (isUpdateUser) {
-                await this.nodemailerService.send(newConfirmationCode, email)
-                // return newConfirmationCode
-                return true
-            } else {
-                return false
-            }
-
+        if (!getUserForAuth) {
+            return false
         }
-        return false
+        if (getUserForAuth.isConfirmed) {
+            return false
+        }
+
+        const newConfirmationCode = uuidv4()
+        const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
+        await this.nodemailerService.send(newConfirmationCode, email)
+        return true
     }
+
+    // const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(email)
+    // if (getUserForAuth) {
+    //     if (getUserForAuth.isConfirmed) {
+    //         return false
+    //     }
+    //     const newConfirmationCode = uuidv4()
+    //     const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
+    //     if (isUpdateUser) {
+    //         await this.nodemailerService.send(newConfirmationCode, email)
+    //         // return newConfirmationCode
+    //         return true
+    //     } else {
+    //         return false
+    //     }
+    //
+    // }
+    // return false
 
 }
