@@ -174,6 +174,7 @@ describe('Blogs', () => {
             const reponse: any = await testManager.registrationConfirmation(confirmationCode);
             const dbUsers = await UserForTestModel.find({}).lean()
             expect(JSON.parse(reponse.status)).toEqual(400)
+            expect(JSON.parse(reponse.text)).toEqual(400)
         });
         it(' registrationEmailResending should true', async () => {
             const reponse: any = await testManager.registrationEmailResending(correctRegistrationData.email);

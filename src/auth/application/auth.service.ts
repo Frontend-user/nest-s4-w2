@@ -81,7 +81,7 @@ export class AuthService {
         const getUser = await this.usersQueryRepository.getUserEmailByConfirmCode(code)
         if(getUser){
             if(getUser.isConfirmed){
-                throw new HttpException({field: 'email', message: 'email is exist'},400)
+                throw new HttpException({ message: 'code is confirmed', field: 'code'},400)
 
             }
             if(!getUser.isConfirmed){
