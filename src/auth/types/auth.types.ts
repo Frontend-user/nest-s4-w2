@@ -46,6 +46,7 @@ export class EmailValidClass {
 }
 
 export class ConfirmationCodeClass {
-    @IsConfirmationCodeValid()  code: string
+    @IsString()
+    code: string
 
 }

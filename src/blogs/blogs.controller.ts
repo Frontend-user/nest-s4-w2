@@ -46,7 +46,7 @@ export class BlogsController {
         const changeBlogs = blogs.map((b: BlogDocumentType) => BlogsMongoDataMapper.toView(b));
         const pagesCount = Math.ceil(totalCount / newPageSize);
 
-        const response = {
+        const response = {///mapper
             pagesCount: pagesCount,
             page: +newPageNumber,
             pageSize: +newPageSize,

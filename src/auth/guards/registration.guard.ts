@@ -1,4 +1,11 @@
-import {Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
+import {
+    Injectable,
+    CanActivate,
+    ExecutionContext,
+    BadRequestException,
+    NotFoundException,
+    HttpException
+} from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 
@@ -25,14 +32,16 @@ export class RegistrationGuard implements CanActivate {
         if (!isExistEmail && !isExistLogin) {
             return true
         } else {
-            const errorsMessages:any = []
-            if(isExistLogin){
-                errorsMessages.push(loginError)
+            const errorsMessages: any = []
+            if (isExistLogin) {
+                throw new HttpException(loginError, 400)
             }
-            if(isExistEmail){
-                errorsMessages.push(emailError)
+            if (isExistEmail) {
+                throw new HttpException(emailError, 400)
             }
-            res.status(400).send({errorsMessages})
+            // res.sendStatus(404),
+            // throw new NotFoundException('W??????????????/')
+            // res.status(400).send({errorsMessages})
 
         }
     }

@@ -2,8 +2,9 @@ import {BadRequestException, INestApplication, ValidationPipe} from "@nestjs/com
 import cookieParser from 'cookie-parser';
 import {useContainer} from "class-validator";
 import {AppModule} from "./app.module";
+import {HttpExceptionFilter} from "./exception.filter";
 
-export const  appSettings = (app: INestApplication) => {
+export const appSettings = (app: INestApplication) => {
     app.use(cookieParser())
     app.enableCors()
     useContainer(app.select(AppModule), {fallbackOnErrors: true});
@@ -11,7 +12,7 @@ export const  appSettings = (app: INestApplication) => {
         {
 
             transform: true,
-            stopAtFirstError: false,
+            stopAtFirstError: true,
             exceptionFactory: (errors) => {
                 const errorsMessages: any = []
                 errors.forEach((e) => {
@@ -44,5 +45,5 @@ export const  appSettings = (app: INestApplication) => {
 
         }
     ))
-    // app.useGlobalFilters()///
+    app.useGlobalFilters(new HttpExceptionFilter())///
 }

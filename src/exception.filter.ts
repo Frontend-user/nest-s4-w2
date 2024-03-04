@@ -1,6 +1,6 @@
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException} from "@nestjs/common";
 
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -15,17 +15,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
         }
 
         if (status === 400) {
-            const errorResponse:any = {
-                errors: []
-            };
+            const errorsMessages: any = [];
 
             const responseBody: any = exception.getResponse();
+            console.log(responseBody)
+            if (responseBody.errorsMessages) {
+                response.status(status)
+                    .json(responseBody);
+            }else if (responseBody) {
+                errorsMessages.push(responseBody)
+                response.status(status)
+                    .json({errorsMessages});
+            }
+            // responseBody.message.forEach((m:any) => {
+            //     errorResponse.errors.push(m);
+            // });
 
-            responseBody.message.forEach((m:any) => {
-                errorResponse.errors.push(m);
-            });
-            response.status(status)
-                .json(errorResponse);
         } else {
             response.status(status)
                 .json({

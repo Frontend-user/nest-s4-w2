@@ -1,4 +1,15 @@
-import {Body, Controller, Get, Param, Post, Res, Request, Response, UseGuards} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Post,
+    Res,
+    Request,
+    Response,
+    UseGuards,
+    BadRequestException, HttpCode, NotFoundException, HttpException
+} from "@nestjs/common";
 import {LocalAuthGuard} from "../guards/local-auth.guard";
 import {AuthService} from "../application/auth.service";
 import {
@@ -36,33 +47,22 @@ export class AuthController {
         throw new Error('Something is not work')
     }
 
-    @UseGuards(RegistrationGuard)
+    // @UseGuards(RegistrationGuard)
+    @HttpCode(204)
     @Post('/registration')
-    async registration(@Request() req, @Response() res, @Body() body: RegistrationDataClass) {
-        try {
-
+    async registration(@Body() body: RegistrationDataClass) {
             const response = await this.authService.registration(body)
-
             if (!response) {
-                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
-                return
+                throw new HttpException({'asddddddddd':'dsdsds'},400)
             }
-
-            // res.send({confirmationCode:response})
-            res.send(204)
-
-        } catch (error) {
-            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
-        }
     }
 
     @Post('/registration-email-resending')
     async registrationEmailResending(@Body() body: EmailValidClass, @Response() res) {
-        try {
 
             const response = await this.authService.registrationEmailResending(body.email)
             if (!response) {
-                res.status(400).send({ errorsMessages: [{ message: ';String', field: "email" }] })
+                res.status(400).send({errorsMessages: [{message: ';String', field: "email"}]})
                 // res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
                 return
             }
@@ -70,26 +70,17 @@ export class AuthController {
             // res.status(204).send({confirmationCode:response})
             res.sendStatus(204)
 
-        } catch (error) {
-            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
-        }
     }
 
-    // @UseGuards(CodeConfirmGuard)
     @Post('/registration-confirmation')
-    async registrationConfirmation(@Body() body: ConfirmationCodeClass, @Response() res)  {
-        try {
+    @HttpCode(204)
+    async registrationConfirmation(@Body() body: any ) {
+        console.log(body)
             const response = await this.authService.registrationConfirmation(body.code)
             if (!response) {
-                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
-                return
+                throw new HttpException({field: 'code', message: 'code in unvalid'},400)
             }
 
-            res.send(204)
-
-        } catch (error) {
-            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500)
-        }
     }
 
 

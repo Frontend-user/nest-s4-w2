@@ -11,7 +11,7 @@ import {PassportModule} from "@nestjs/passport";
 import {MyJwtService} from "../_common/jwt-service";
 import {UsersRepository} from "../users/repositories/users.repository";
 import {NodemailerService} from "../_common/nodemailer-service";
-import { IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
+import {IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
 
 @Module({
     imports: [
@@ -26,9 +26,9 @@ import { IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
     ],
     controllers: [AuthController],
     providers: [BasicStrategy, AuthService, LocalStrategy,
-        MyJwtService, JwtService,NodemailerService,
+        MyJwtService, JwtService, NodemailerService,
         IsConfirmationCodeValidConstraint],
-    exports:[JwtService]
+    exports: [JwtService]
 })
 export class AuthModule {
 }

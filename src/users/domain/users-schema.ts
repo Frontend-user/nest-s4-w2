@@ -16,14 +16,20 @@ export class User {
     name: 'User';
     @Prop({type: SchemaTypes.Mixed, required: true}) accountData: UserAccountDataModel;
 
-    @Prop() passwordSalt: string;
+    @Prop()
+    passwordSalt: string;
 
-    @Prop() passwordHash: string;
+    @Prop()
+    passwordHash: string;
 
-    @Prop({type: SchemaTypes.Mixed, required: false}) emailConfirmation: UserEmailConfirmationModel;
+    @Prop({type: SchemaTypes.Mixed, required: false})
+    emailConfirmation: UserEmailConfirmationModel;
 
-    @Prop() isConfirmed: boolean;
-    @Prop() isCreatedFromAdmin: boolean;
+    @Prop()
+
+    isConfirmed: boolean;
+    @Prop()
+    isCreatedFromAdmin: boolean;
 
     static async createUserEntity(user: CreateUserInputModelType, isReqFromSuperAdmin: boolean, confirmationCode?: string, confirmationDate?: Date): Promise<User> {
         const passwordSalt = await MyJwtService.generateSalt(10);

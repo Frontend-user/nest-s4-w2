@@ -14,19 +14,13 @@ import {HTTP_STATUSES} from "../_common/constants";
 
 describe('Blogs', () => {
     let app: INestApplication;
-    // eslint-disable-next-line prefer-const
     let testManager: TestManager;
     let httpServer
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
-        }).overrideProvider(AuthController).useClass(AuthController).compile()  // .useValue({
-        //     s: 'q',
-        // })
-        // .compile();
-        // app = moduleRef.createNestApplication();
-        //
+        }).overrideProvider(AuthController).useClass(AuthController).compile()
         app = moduleFixture.createNestApplication()
         appSettings(app)
         await app.init();
@@ -36,20 +30,6 @@ describe('Blogs', () => {
 
     });
 
-    // beforeAll(async () => {
-    //     const moduleRef = await Test.createTestingModule({
-    //         imports: [AppModule],
-    //     })
-    //         .overrideProvider(BlogsController)
-    //         .useValue({
-    //             s: 'q',
-    //         })
-    //         .compile();
-    //     app = moduleRef.createNestApplication();
-    //
-    //     await app.init();
-    //     testManager = new TestManager(app);
-    // });
     const mongoURI = process.env.MONGO_NEST_URL as string;
     beforeAll(async () => {
         await mongoose.connect(mongoURI);
@@ -148,18 +128,23 @@ describe('Blogs', () => {
             const reponse = await testManager.getUsers();
             expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
         });
-        let confirmationCode: any
-        it('Correct registration', async () => {
+        let confirmationCode = '1234'
+
+        it('Correct registration expect 204', async () => {
             const reponse: any = await testManager.registration(correctRegistrationData);
-            confirmationCode = JSON.parse(reponse.text).confirmationCode
-            // expect(reponse.status).toEqual(204)
-            expect(confirmationCode).toEqual(204)
+            expect(reponse.status).toEqual(204)
         });
-        it('IS EXIST Correct registration', async () => {
+
+        it('Incorrect registration expect message login is exist!', async () => {
             const reponse: any = await testManager.registration(correctRegistrationData);
-            // expect(reponse.status).toEqual(204)
-            expect(reponse.text).toEqual(204)
+            expect(JSON.parse(reponse.text)).toEqual({
+                "errorsMessages": [{
+                    "field": "login",
+                    "message": "login is exist"
+                }]
+            })
         });
+
         it('InCORRECT registration', async () => {
             const reponse: any = await testManager.registration(inCorrectRegistrationData);
             expect(reponse.status).toEqual(400)
@@ -168,47 +153,43 @@ describe('Blogs', () => {
                     {
                         message: expect.any(String),
                         field: expect.any(String)
-                    }, {
-                        message: expect.any(String),
-                        field: expect.any(String)
-                    }, {
-                        message: expect.any(String),
-                        field: expect.any(String)
                     },
+                    {
+                        message: expect.any(String),
+                        field: expect.any(String)
+                    }, {
+                        message: expect.any(String),
+                        field: expect.any(String)
+                    }
                 ]
             })
         });
 
-        it(' registrationConfirmation should true', async () => {
+        it('Correct RegistrationConfirmation should return true', async () => {
             const reponse: any = await testManager.registrationConfirmation(confirmationCode);
             const dbUsers = await UserForTestModel.find({}).lean()
-            // expect(dbUsers).toEqual('ONe')
-            expect(JSON.parse(reponse.text)).toEqual(204)
+            expect(JSON.parse(reponse.status)).toEqual(204)
         });
         it(' registrationConfirmation should FALSE', async () => {
             const reponse: any = await testManager.registrationConfirmation(confirmationCode);
             const dbUsers = await UserForTestModel.find({}).lean()
-            // expect(dbUsers).toEqual('ONe')
-            expect(JSON.parse(reponse.text)).toEqual(204)
+            expect(JSON.parse(reponse.status)).toEqual(400)
         });
         it(' registrationEmailResending should true', async () => {
             const reponse: any = await testManager.registrationEmailResending(correctRegistrationData.email);
-            // expect(reponse).toEqual(204)
-            expect(reponse.status).toEqual(204)
+            expect(reponse.status).toEqual(400)
         });
 
 
         it(' registrationEmailResending should false', async () => {
             const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
-            // expect(reponse).toEqual('s')
-            expect(reponse.text).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
+            expect(reponse.status).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
         });
 
         it('get users', async () => {
             const reponse = await testManager.getUsers();
             const dbUsers = await UserForTestModel.find({}).lean()
-            expect(dbUsers).toEqual('ONe')
-            expect(reponse.length).toEqual(1)
+            expect(dbUsers.length).toEqual(1)
         });
     })
 

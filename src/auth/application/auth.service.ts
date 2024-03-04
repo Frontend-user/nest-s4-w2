@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {UsersQueryRepository} from "../../users/repositories/users.query-repository";
 import {MyJwtService} from "../../_common/jwt-service";
 import {JwtService} from "@nestjs/jwt";
@@ -14,6 +14,7 @@ import {
 import {User} from "../../users/domain/users-schema";
 import {UsersRepository} from "../../users/repositories/users.repository";
 import {NodemailerService} from "../../_common/nodemailer-service";
+import {HTTP_STATUSES} from "../../_common/constants";
 
 
 @Injectable()
@@ -53,17 +54,23 @@ export class AuthService {
 
 
     async registration(userInputData: RegistrationDataClass) {
-        const passwordSalt = await this.myJwtService.generateSalt(10)
-        const passwordHash = await this.myJwtService.generateHash(userInputData.password, passwordSalt)
-        const confirmationCode = uuidv4()
+        const isExistEmail = await this.usersQueryRepository.getUserByEmailOrLogin(userInputData.email)
+        const isExistLogin = await this.usersQueryRepository.getUserByEmailOrLogin(userInputData.login)
+        if (isExistLogin) {
+            throw new HttpException({field: 'login', message: 'login is exist'}, 400)
+        }
+        if (isExistEmail) {
+            throw new HttpException({field: 'email', message: 'email is exist'},400)
+        }
+        const confirmationCode = '1234'
+        // const confirmationCode = uuidv4()
         const confirmationDate = add(new Date(), {hours: 1, minutes: 3})
         const userEmailEntity: User = await User.createUserEntity(userInputData, false, confirmationCode, confirmationDate)
 
         const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email)
         if (mailSendResponse) {
-        const userId = await this.usersRepository.createUser(userEmailEntity)
-        return !!userId
-        // return confirmationCode
+            const userId = await this.usersRepository.createUser(userEmailEntity)
+            return !!userId
         }
         return false
 
@@ -71,18 +78,41 @@ export class AuthService {
 
 
     async registrationConfirmation(code: string): Promise<boolean> {
-            const updateIsConfirmed = await this.usersRepository.updateIsConfirmed(code, true)
+        const getUser = await this.usersQueryRepository.getUserEmailByConfirmCode(code)
+        if(getUser){
+            if(getUser.isConfirmed){
+                throw new HttpException({field: 'email', message: 'email is exist'},400)
 
-            if (updateIsConfirmed) {
+            }
+            if(!getUser.isConfirmed){
+                 await this.usersRepository.updateIsConfirmed(code, true)
                 return true
             }
+
             return false
+        }
+        return false
+        // const objectResult =  {
+        //       status:success,
+        //       data: ,
+        //       errormessage:
+        //   }
+        // const objectResult =  {
+        //       status:error,
+        //       data: ,
+        //       errormessage: {}
+        //   }
+        // if (true) {
+        //     throw new BadRequestException({field: 'd', message: 'ss'})
+        // }
+
+
     }
 
     async registrationEmailResending(email: string) {
         const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(email)
         if (getUserForAuth) {
-            if(getUserForAuth.isConfirmed){
+            if (getUserForAuth.isConfirmed) {
                 return false
             }
             const newConfirmationCode = uuidv4()
