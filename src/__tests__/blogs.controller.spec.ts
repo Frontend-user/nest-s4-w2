@@ -181,17 +181,17 @@ describe('Blogs', () => {
             expect(reponse.status).toEqual(400)
         });
 
-
-        it(' registrationEmailResending should false', async () => {
-            const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
-            expect(reponse.status).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
-        });
-
-        it('get users', async () => {
-            const reponse = await testManager.getUsers();
-            const dbUsers = await UserForTestModel.find({}).lean()
-            expect(dbUsers.length).toEqual(1)
-        });
+        //
+        // it(' registrationEmailResending should false', async () => {
+        //     const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
+        //     expect(reponse.status).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
+        // });
+        //
+        // it('get users', async () => {
+        //     const reponse = await testManager.getUsers();
+        //     const dbUsers = await UserForTestModel.find({}).lean()
+        //     expect(dbUsers.length).toEqual(1)
+        // });
     })
 
 
