@@ -82,6 +82,9 @@ export class AuthService {
     async registrationEmailResending(email: string) {
         const getUserForAuth = await this.usersQueryRepository.getUserByEmailOrLogin(email)
         if (getUserForAuth) {
+            if(getUserForAuth.isConfirmed){
+                return false
+            }
             const newConfirmationCode = uuidv4()
             const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
             if (isUpdateUser) {

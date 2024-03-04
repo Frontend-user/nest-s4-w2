@@ -62,7 +62,8 @@ export class AuthController {
 
             const response = await this.authService.registrationEmailResending(body.email)
             if (!response) {
-                res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
+                res.status(400).send({ errorsMessages: [{ message: ';String', field: "email" }] })
+                // res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
                 return
             }
 
