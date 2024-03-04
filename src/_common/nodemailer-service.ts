@@ -4,7 +4,7 @@ const nodemailer = require("nodemailer");
 
 @Injectable()
 export class NodemailerService  {
-    async send(confirmationCode: string, emailToSend: string) {
+    async send(confirmationCode: string, emailToSend: string,RESENDING?:string) {
         try {
             const transporter = await nodemailer.createTransport({
                 service: 'gmail',
@@ -18,7 +18,7 @@ export class NodemailerService  {
                 from: '"Fred Foo 👻" <robersargsyan2023@gmail.com>',
                 to: emailToSend,
                 subject: "Hello ✔",
-                text: `Hello world?`,
+                text: `Hello world?${RESENDING}`,
                 html: ` <h1>Thank for your registration</h1>
  <p>To finish registration please follow the link below:
  ${confirmationCode}

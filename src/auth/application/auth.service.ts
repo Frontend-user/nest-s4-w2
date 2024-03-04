@@ -67,7 +67,7 @@ export class AuthService {
         const confirmationDate = add(new Date(), {hours: 1, minutes: 3})
         const userEmailEntity: User = await User.createUserEntity(userInputData, false, confirmationCode, confirmationDate)
 
-        const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email)
+        const mailSendResponse = await this.nodemailerService.send(userEmailEntity.emailConfirmation.confirmationCode, userInputData.email,'REGISTRATION')
         if (mailSendResponse) {
             const userId = await this.usersRepository.createUser(userEmailEntity)
             return !!userId
@@ -92,21 +92,6 @@ export class AuthService {
             return false
         }
         return false
-        // const objectResult =  {
-        //       status:success,
-        //       data: ,
-        //       errormessage:
-        //   }
-        // const objectResult =  {
-        //       status:error,
-        //       data: ,
-        //       errormessage: {}
-        //   }
-        // if (true) {
-        //     throw new BadRequestException({field: 'd', message: 'ss'})
-        // }
-
-
     }
 
     async registrationEmailResending(email: string) {
@@ -118,7 +103,7 @@ export class AuthService {
             const newConfirmationCode = uuidv4()
             const isUpdateUser = await this.usersRepository.updateUserConfirmationCode(String(getUserForAuth._id), newConfirmationCode)
             if (isUpdateUser) {
-                await this.nodemailerService.send(newConfirmationCode, email)
+                await this.nodemailerService.send(newConfirmationCode, email,'RESENDING')
                 // return newConfirmationCode
                 return true
             } else {
