@@ -24,7 +24,7 @@ export class AppController {
 
     @Get()
     hi() {
-        return 'HI WORLD!'
+        return 'Hello WORLD!'
     }
 
 }
