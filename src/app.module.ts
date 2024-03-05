@@ -17,8 +17,7 @@ import { join } from 'path';
     imports: [
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'swagger-static'),
-            serveRoot: '/swagger',
-            // process.env.NODE_ENV === 'development' ? '/' :
+            serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
         }),
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
