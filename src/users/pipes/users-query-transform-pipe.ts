@@ -1,5 +1,5 @@
 import {ArgumentMetadata, Injectable, PipeTransform} from '@nestjs/common';
-import {SortOrder} from "mongoose";
+import {SortParamsType} from "../../_common/types/query";
 
 @Injectable()
 export class UsersQueryTransformPipe implements PipeTransform<string, string> {
@@ -8,6 +8,7 @@ export class UsersQueryTransformPipe implements PipeTransform<string, string> {
         const newPageSize = !usersQuery.pageSize ? 10 : +usersQuery.pageSize;
         const skip = (newPageNumber - 1) * newPageSize;
         const limit = newPageSize;
+
         let newSortBy: string
         if (usersQuery.sortBy) {
             newSortBy = `accountData.${usersQuery.sortBy}`;
@@ -49,9 +50,5 @@ export class UsersQueryTransformTypes {
     newPageSize:number
     sortParams:SortParamsType
     findQuery:any
-}
-
-type SortParamsType = {
-    [key: string]: SortOrder
 }
 

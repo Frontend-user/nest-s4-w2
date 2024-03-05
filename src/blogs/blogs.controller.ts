@@ -26,6 +26,8 @@ import {PostsMongoDataMapper} from '../posts/domain/posts.mongo.dm';
 import {HTTP_STATUSES} from '../_common/constants';
 import {query} from 'express';
 import {NotFoundError} from "rxjs";
+import {BlogsQueryTransformPipe, BlogsQueryTransformTypes, BlogsQueryTypes} from "./pipes/blogs-query-transform-pipe";
+import {PostsQueryTransformPipe, PostsQueryTransformTypes} from "../posts/pipes/posts-query-transform-pipe";
 
 @Controller('/blogs')
 export class BlogsController {
@@ -38,31 +40,15 @@ export class BlogsController {
 
     @Get()
     async getBlogs(
-        @Query('searchNameTerm') searchNameTerm?: string,
-        @Query('sortBy') sortBy?: string,
-        @Query('sortDirection') sortDirection?: string,
-        @Query('pageNumber') pageNumber?: number,
-        @Query('pageSize') pageSize?: number,
-    ) {
-        const {skip, limit, newPageNumber, newPageSize, sortParams} = QueryUtilsClass.getPagination(
-            pageNumber,
-            pageSize,
-            sortBy,
-            sortDirection,
-        );
-        const {totalCount, blogs} = await this.blogsQueryRepository.getBlogs(
-            sortParams,
-            searchNameTerm,
-            skip,
-            limit,
-        );
+        @Query(BlogsQueryTransformPipe) blogsQueries: BlogsQueryTransformTypes ) {
+        const {totalCount, blogs} = await this.blogsQueryRepository.getBlogs(blogsQueries);
         const changeBlogs = blogs.map((b: BlogDocumentType) => BlogsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / newPageSize);
+        const pagesCount = Math.ceil(totalCount / blogsQueries.newPageSize);
 
         const response = {///mapper
             pagesCount: pagesCount,
-            page: +newPageNumber,
-            pageSize: +newPageSize,
+            page: blogsQueries.newPageNumber,
+            pageSize: blogsQueries.newPageSize,
             totalCount: totalCount,
             items: changeBlogs,
         };
@@ -82,21 +68,11 @@ export class BlogsController {
     @Get('/:id/posts')
     async getPostByBlogId(
         @Param('id') id: string,
-        @Query('sortBy') sortBy?: string,
-        @Query('sortDirection') sortDirection?: string,
-        @Query('pageNumber') pageNumber?: number,
-        @Query('pageSize') pageSize?: number,
-    ) {
+        @Query(PostsQueryTransformPipe) postsQueries: PostsQueryTransformTypes) {
         if (!id) {
             throw new HttpException('Failed getPostByBlogId', HttpStatus.NOT_FOUND)
         }
-        const {skip, limit, newPageNumber, newPageSize, sortParams} = QueryUtilsClass.getPagination(
-            pageNumber,
-            pageSize,
-            sortBy,
-            sortDirection,
-        );
-        const result = await this.postsQueryRepository.getPostsByBlogId(sortParams, id, skip, limit);
+        const result = await this.postsQueryRepository.getPostsByBlogId(postsQueries, id);
 
         const blog = await this.blogsService.getBlogById(id);
         if (!blog) {
@@ -104,12 +80,12 @@ export class BlogsController {
         }
         const {totalCount, posts} = result;
         const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / newPageSize);
+        const pagesCount = Math.ceil(totalCount / postsQueries.newPageSize);
 
         const response = {
             pagesCount: pagesCount,
-            page: +newPageNumber,
-            pageSize: +newPageSize,
+            page: postsQueries.newPageNumber,
+            pageSize: postsQueries.newPageSize,
             totalCount: totalCount,
             items: changeBlogs,
         };

@@ -22,7 +22,7 @@ import {UsersMongoDataMapper} from './domain/users.mongo.dm';
 import {QueryUtilsClass} from '../_common/query.utils';
 import {BasicAuthGuard} from "../auth/guards/basic-auth.guart";
 import {IsEmail, IsInt, IsString, Length} from "class-validator";
-import {UsersQueryTransformPipe, UsersQueryTransformTypes} from "./pipes/UsersQueryTransformPipe";
+import {UsersQueryTransformPipe, UsersQueryTransformTypes} from "./pipes/users-query-transform-pipe";
 
 export class CreateUserInputModelType {
     @Length(3, 10)

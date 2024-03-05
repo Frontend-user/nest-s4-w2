@@ -65,7 +65,8 @@ export class TestManager {
         pageNumber?: number,
     ) {
         const response = await request(this.app.getHttpServer()).get(
-            `/blogs?searchNameTerm=${searchNameTerm}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
+            // `/blogs?searchNameTerm=${searchNameTerm}`,
+            `/blogs?pageSize=${pageSize}&pageNumber=${pageNumber}`,
         );
         return JSON.parse(response.text);
     }

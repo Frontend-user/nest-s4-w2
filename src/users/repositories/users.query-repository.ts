@@ -2,7 +2,8 @@ import {Model} from 'mongoose';
 import {InjectModel} from '@nestjs/mongoose';
 import {Injectable} from '@nestjs/common';
 import {createUserEntity, User, UserDocumentType} from '../domain/users-schema';
-import {UsersQueryTransformTypes} from "../pipes/UsersQueryTransformPipe";
+import {UsersQueryTransformTypes} from "../pipes/users-query-transform-pipe";
+import {UserQueryResult} from "../../_common/object-result";
 
 @Injectable()
 export class UsersQueryRepository {

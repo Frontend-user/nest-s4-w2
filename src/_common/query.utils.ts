@@ -1,20 +1,20 @@
 import {SortOrder} from 'mongoose';
+import {PaginationDataType, SortParamsType} from "./types/query";
 
 export class QueryUtilsClass {
-    static getPagination(
-        pageNumber?: number,
-        pageSize?: number,
-        sortBy?: string,
-        sortDirection?: string,
-    ) {
-        const newPageNumber = !pageNumber ? 1 : pageNumber;
-        const newPageSize = !pageSize ? 10 : pageSize;
+    static getPagination(queryData:any):PaginationDataType {
+        const newPageNumber = !queryData.pageNumber ? 1 : +queryData.pageNumber;
+        const newPageSize = !queryData.pageSize ? 10 : +queryData.pageSize;
         const skip = (newPageNumber - 1) * newPageSize;
         const limit = newPageSize;
-
-        const newSortBy = sortBy ?? 'createdAt';
-        const newSortDir = sortDirection ?? 'desc';
-        const sortParams = {};
+        let newSortBy: string
+        if (queryData.sortBy) {
+            newSortBy = queryData.sortBy;
+        } else {
+            newSortBy = 'createdAt';
+        }
+        const newSortDir:SortOrder = queryData.sortDirection ?? 'desc';
+        const sortParams: SortParamsType = {};
         sortParams[newSortBy] = newSortDir;
 
         return {

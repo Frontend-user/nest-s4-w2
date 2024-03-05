@@ -21,6 +21,8 @@ import {PostsMongoDataMapper} from './domain/posts.mongo.dm';
 import {BlogsQueryRepository} from '../blogs/repositories/blogs.query-repository';
 import {HTTP_STATUSES} from '../_common/constants';
 import {QueryUtilsClass} from '../_common/query.utils';
+import {BlogsQueryTransformPipe, BlogsQueryTransformTypes} from "../blogs/pipes/blogs-query-transform-pipe";
+import {PostsQueryTransformPipe, PostsQueryTransformTypes} from "./pipes/posts-query-transform-pipe";
 
 @Controller('/posts')
 export class PostsController {
@@ -34,30 +36,21 @@ export class PostsController {
 
     @Get()
     async getPosts(
-        @Query('sortBy') sortBy?: string,
-        @Query('sortDirection') sortDirection?: string,
-        @Query('pageNumber') pageNumber?: number,
-        @Query('pageSize') pageSize?: number,
-    ) {
-        const {skip, limit, newPageNumber, newPageSize, sortParams} = QueryUtilsClass.getPagination(
-            pageNumber,
-            pageSize,
-            sortBy,
-            sortDirection,
-        );
-        const result = await this.postsQueryRepository.getPosts(sortParams, skip, limit);
+        @Query(PostsQueryTransformPipe) postsQueries: PostsQueryTransformTypes)
+    {
+        const result = await this.postsQueryRepository.getPosts(postsQueries);
 
         if (!result) {
             throw new HttpException('Falied getPosts', HttpStatus.NOT_FOUND)
         }
         const {totalCount, posts} = result;
         const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / newPageSize);
+        const pagesCount = Math.ceil(totalCount / postsQueries.newPageSize);
 
         const response = {
             pagesCount: pagesCount,
-            page: +newPageNumber,
-            pageSize: +newPageSize,
+            page: postsQueries.newPageNumber,
+            pageSize: postsQueries.newPageSize,
             totalCount: totalCount,
             items: changeBlogs,
         };
@@ -115,7 +108,7 @@ export class PostsController {
     async deletePost(@Param('id') id: string) {
         try {
             const response: any = await this.postsService.deletePost(id);
-            if(!response){
+            if (!response) {
                 throw new HttpException('Falied deletePost', HttpStatus.NOT_FOUND)
             }
         } catch (error) {

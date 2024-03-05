@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { SortParamsModel } from '../../_common/query.utils';
+import {BlogsQueryTransformTypes} from "../pipes/blogs-query-transform-pipe";
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -18,21 +19,11 @@ export class BlogsQueryRepository {
     }
   }
 
-  async getBlogs(
-    sortParams,
-    searchNameTerm?: string,
-    skip: number = 0,
-    limit: number = 10,
-  ): Promise<{ totalCount: number; blogs: Blog[] }> {
-    const query = this.blogModel.find();
-    const totalCount = this.blogModel.find();
-    if (searchNameTerm) {
-      const newRegexp = new RegExp(searchNameTerm, 'i');
-      query.where('name').regex(newRegexp);
-      totalCount.where('name').regex(newRegexp);
-    }
+  async getBlogs(blogsQueries:BlogsQueryTransformTypes): Promise<{ totalCount: number; blogs: Blog[] }> {
+    const query = this.blogModel.find(blogsQueries.findQuery);
+    const totalCount = this.blogModel.find(blogsQueries.findQuery);
 
-    const blogs = await query.sort(sortParams).skip(skip).limit(limit).lean();
+    const blogs = await query.sort(blogsQueries.sortParams).skip(blogsQueries.skip).limit(blogsQueries.limit).lean();
     if (blogs.length > 0) {
       const allBlogs = await totalCount.countDocuments();
 
