@@ -23,6 +23,8 @@ import {HTTP_STATUSES} from '../_common/constants';
 import {QueryUtilsClass} from '../_common/query.utils';
 import {BlogsQueryTransformPipe, BlogsQueryTransformTypes} from "../blogs/pipes/blogs-query-transform-pipe";
 import {PostsQueryTransformPipe, PostsQueryTransformTypes} from "./pipes/posts-query-transform-pipe";
+import {CommonResponseFabric} from "../_common/common-mapper";
+import {UsersMongoDataMapper} from "../users/domain/users.mongo.dm";
 
 @Controller('/posts')
 export class PostsController {
@@ -44,17 +46,17 @@ export class PostsController {
             throw new HttpException('Falied getPosts', HttpStatus.NOT_FOUND)
         }
         const {totalCount, posts} = result;
-        const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / postsQueries.newPageSize);
-
-        const response = {
-            pagesCount: pagesCount,
-            page: postsQueries.newPageNumber,
-            pageSize: postsQueries.newPageSize,
-            totalCount: totalCount,
-            items: changeBlogs,
-        };
-        return response
+        // const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
+        // const pagesCount = Math.ceil(totalCount / postsQueries.newPageSize);
+        //
+        // const response = {
+        //     pagesCount: pagesCount,
+        //     page: postsQueries.newPageNumber,
+        //     pageSize: postsQueries.newPageSize,
+        //     totalCount: totalCount,
+        //     items: changeBlogs,
+        // };
+        return CommonResponseFabric.createAndGetResponse(postsQueries, posts, totalCount,PostsMongoDataMapper)
     }
 
     @Get('/:id')

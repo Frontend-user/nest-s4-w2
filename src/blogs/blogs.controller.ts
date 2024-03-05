@@ -28,6 +28,7 @@ import {query} from 'express';
 import {NotFoundError} from "rxjs";
 import {BlogsQueryTransformPipe, BlogsQueryTransformTypes, BlogsQueryTypes} from "./pipes/blogs-query-transform-pipe";
 import {PostsQueryTransformPipe, PostsQueryTransformTypes} from "../posts/pipes/posts-query-transform-pipe";
+import {CommonResponseFabric} from "../_common/common-mapper";
 
 @Controller('/blogs')
 export class BlogsController {
@@ -42,18 +43,19 @@ export class BlogsController {
     async getBlogs(
         @Query(BlogsQueryTransformPipe) blogsQueries: BlogsQueryTransformTypes ) {
         const {totalCount, blogs} = await this.blogsQueryRepository.getBlogs(blogsQueries);
-        const changeBlogs = blogs.map((b: BlogDocumentType) => BlogsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / blogsQueries.newPageSize);
+        // const changeBlogs = blogs.map((b: BlogDocumentType) => BlogsMongoDataMapper.toView(b));
+        // const pagesCount = Math.ceil(totalCount / blogsQueries.newPageSize);
+        return CommonResponseFabric.createAndGetResponse(blogsQueries, blogs, totalCount,BlogsMongoDataMapper)
 
-        const response = {///mapper
-            pagesCount: pagesCount,
-            page: blogsQueries.newPageNumber,
-            pageSize: blogsQueries.newPageSize,
-            totalCount: totalCount,
-            items: changeBlogs,
-        };
-
-        return response;
+        // const response = {///mapper
+        //     pagesCount: pagesCount,
+        //     page: blogsQueries.newPageNumber,
+        //     pageSize: blogsQueries.newPageSize,
+        //     totalCount: totalCount,
+        //     items: changeBlogs,
+        // };
+        //
+        // return response;
     }
 
     @Get('/:id')

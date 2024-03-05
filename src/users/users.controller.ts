@@ -7,22 +7,17 @@ import {
     HttpException, HttpStatus,
     Param,
     Post,
-    Put,
     Query,
-    Res,
     UseGuards
 } from '@nestjs/common';
 import {UsersService} from './application/./users.service';
-import {UsersRepository} from './repositories/users.repository';
 import {UsersQueryRepository} from './repositories/users.query-repository';
-import {UserCreateModel, UserDocumentType} from './domain/users-schema';
-import {BlogsQueryRepository} from '../blogs/repositories/blogs.query-repository';
-import {HTTP_STATUSES} from '../_common/constants';
+import { UserDocumentType} from './domain/users-schema';
 import {UsersMongoDataMapper} from './domain/users.mongo.dm';
-import {QueryUtilsClass} from '../_common/query.utils';
 import {BasicAuthGuard} from "../auth/guards/basic-auth.guart";
-import {IsEmail, IsInt, IsString, Length} from "class-validator";
+import {IsEmail, IsString, Length} from "class-validator";
 import {UsersQueryTransformPipe, UsersQueryTransformTypes} from "./pipes/users-query-transform-pipe";
+import {CommonResponseFabric} from "../_common/common-mapper";
 
 export class CreateUserInputModelType {
     @Length(3, 10)
@@ -52,32 +47,9 @@ export class UsersController {
         try {
             const {totalCount, users} = await this.usersQueryRepository.getUsers(usersQueries);
             if (!totalCount) {
-                const response = {
-                    pagesCount: 1,
-                    page: 1,
-                    pageSize: 10,
-                    totalCount: 0,
-                    items: [],
-                };
-
-                return response
+                return UsersMongoDataMapper.createAndGetClearResponse()
             }
-            let changeUsers;
-            try {
-                changeUsers = users.map((b: UserDocumentType) => UsersMongoDataMapper.toView(b));
-            } catch (e) {
-                throw new HttpException('Failed to try get users', HttpStatus.BAD_REQUEST)
-            }
-            const pagesCount = Math.ceil(totalCount / usersQueries.newPageSize);
-
-            const response = {
-                pagesCount: pagesCount,
-                page: usersQueries.newPageNumber,
-                pageSize: usersQueries.newPageSize,
-                totalCount: totalCount,
-                items: changeUsers,
-            };
-            return response
+            return CommonResponseFabric.createAndGetResponse(usersQueries, users, totalCount,UsersMongoDataMapper)
         } catch (error) {
             console.error('Ошибка при получении данных из коллекции:', error);
             throw new HttpException('Failed to try get users', HttpStatus.BAD_REQUEST)

@@ -93,7 +93,7 @@ describe('Blogs', () => {
         it('get users', async () => {
             const reponse = await testManager.getUsers('a','z',0,0,'email','asc');
             // expect(reponse.items.length).toEqual('s')
-            expect(reponse.items).toEqual('s')
+            expect(reponse).toEqual('s')
         });
 
     })

@@ -1,3 +1,5 @@
+import {UserViewModel} from "../domain/users-schema";
+
 export type LikeStatus = 'None' | 'Like' | 'Dislike';
 
 export type NewLikeStatusType = {
@@ -34,3 +36,10 @@ export type ExtendedLikesInfoType = {
   newestLikes: NewLikeStatusType[];
 };
 
+export type UserResponseType = {
+  pagesCount: number
+  page: number
+  pageSize: number
+  totalCount: number
+  items: UserViewModel[]
+}
