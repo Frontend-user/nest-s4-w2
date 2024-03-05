@@ -4,7 +4,7 @@ import {appSettings} from "./app.settings";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {  createWriteStream } from 'fs';
 import { get } from 'http';
-const serverUrl = 'http://localhost:3000'
+const serverUrl = 'http://localhost:5000'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     appSettings(app)

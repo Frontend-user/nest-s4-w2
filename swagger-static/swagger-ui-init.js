@@ -22,6 +22,17 @@ window.onload = function() {
           }
         }
       },
+      "/": {
+        "get": {
+          "operationId": "AppController_hi",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
       "/auth/login": {
         "post": {
           "operationId": "AuthController_login",
