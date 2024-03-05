@@ -12,8 +12,8 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
 
     public validate = async (req, username, password): Promise<boolean> => {
         if (
-            'admin' === username &&
-            'qwerty' === password
+            process.env.SUPERADMIN_LOGIN === username &&
+            process.env.SUPERADMIN_PASSWORD === password
         ) {
             return true;
         }

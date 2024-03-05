@@ -46,7 +46,6 @@ export class UsersController {
     ) {
     }
 
-    @HttpCode(204)
     @Get()
     async getUsers(
         @Query('searchLoginTerm') searchLoginTerm?: string,
@@ -127,6 +126,7 @@ export class UsersController {
     }
 
     @UseGuards(BasicAuthGuard)
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('/:id')
     async deleteUser(@Param('id') id: string) {
         try {

@@ -32,7 +32,6 @@ export class PostsController {
     ) {
     }
 
-    @HttpCode(201)
     @Get()
     async getPosts(
         @Query('sortBy') sortBy?: string,
@@ -65,7 +64,6 @@ export class PostsController {
         return response
     }
 
-    @HttpCode(201)
     @Get('/:id')
     async getPostById(@Param() id: string): Promise<PostViewModel | any> {
         try {
@@ -98,7 +96,7 @@ export class PostsController {
         }
     }
 
-    @HttpCode(201)
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Put('/:id')
     async updatePost(@Body() body: PostInputCreateModel, @Param('id') id: string) {
         try {
@@ -112,6 +110,7 @@ export class PostsController {
         }
     }
 
+    @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('/:id')
     async deletePost(@Param('id') id: string) {
         try {

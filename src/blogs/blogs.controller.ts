@@ -36,7 +36,6 @@ export class BlogsController {
     ) {
     }
 
-    @HttpCode(201)
     @Get()
     async getBlogs(
         @Query('searchNameTerm') searchNameTerm?: string,
@@ -71,7 +70,6 @@ export class BlogsController {
         return response;
     }
 
-    @HttpCode(201)
     @Get('/:id')
     async getBlogById(@Param('id') id: string): Promise<BlogViewModel | any> {
         const blog: BlogDocumentType | null = await this.blogsQueryRepository.getBlogById(id);
@@ -81,7 +79,6 @@ export class BlogsController {
         return BlogsMongoDataMapper.toView(blog)
     }
 
-    @HttpCode(201)
     @Get('/:id/posts')
     async getPostByBlogId(
         @Param('id') id: string,
