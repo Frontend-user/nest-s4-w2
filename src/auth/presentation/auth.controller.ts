@@ -31,7 +31,7 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('/login')
-    async login(@Request() req, @Response() res, @Body() body: LoginOrEmailPasswordModel): Promise<{
+    async login(@Response() res, @Body() body: LoginOrEmailPasswordModel): Promise<{
         accessToken: string
     } | void> {
         const {
@@ -47,47 +47,35 @@ export class AuthController {
         throw new Error('Something is not work')
     }
 
-    // @UseGuards(RegistrationGuard)
     @HttpCode(204)
     @Post('/registration')
     async registration(@Body() body: RegistrationDataClass) {
-            const response = await this.authService.registration(body)
-            if (!response) {
-                throw new HttpException({'asddddddddd':'dsdsds'},400)
-            }
+        const response = await this.authService.registration(body)
+        if (!response) {
+            throw new HttpException('Falied registration', 400)
+        }
     }
 
+    @HttpCode(204)
     @Post('/registration-email-resending')
-    async registrationEmailResending(@Body() body: EmailValidClass, @Response() res) {
+    async registrationEmailResending(@Body() body: EmailValidClass) {
 
-            const response = await this.authService.registrationEmailResending(body.email)
-            if (!response) {
-                res.status(400).send({errorsMessages: [{message: ';String', field: "email"}]})
-                // res.sendStatus(HTTP_STATUSES.SOMETHING_WRONG_400)
-                return
-            }
-
-            // res.status(204).send({confirmationCode:response})
-            res.sendStatus(204)
+        const response = await this.authService.registrationEmailResending(body.email)
+        if (!response) {
+            throw new HttpException({message: 'wrong email', field: "email"}, 400)
+        }
 
     }
 
     @Post('/registration-confirmation')
     @HttpCode(204)
-    async registrationConfirmation(@Body() body: any ) {
+    async registrationConfirmation(@Body() body: any) {
         console.log(body)
-            const response = await this.authService.registrationConfirmation(body.code)
-            if (!response) {
-                throw new HttpException({field: 'code', message: 'code in unvalid'},400)
-            }
+        const response = await this.authService.registrationConfirmation(body.code)
+        if (!response) {
+            throw new HttpException({field: 'code', message: 'code in Invalid'}, 400)
+        }
 
     }
 
-
-    // @UseGuards(BasicAuthGuard)
-    @Get('/test')
-    async testF(@Request() req) {
-        console.log(req.headers.cookie, 'olggggggggggggggg')
-        return {refreshToken: req.header.cookie}
-    }
 }

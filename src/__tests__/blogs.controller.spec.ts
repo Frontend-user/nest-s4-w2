@@ -121,7 +121,7 @@ describe('Blogs', () => {
 
     describe('Registration', () => {
         it('TEST DELETE ALL', async () => {
-            await testManager.deleteAll();
+            await testManager.deledteAll();
         });
 
         it('get users', async () => {
@@ -177,15 +177,15 @@ describe('Blogs', () => {
             expect(JSON.parse(reponse.text)).toEqual(400)
         });
         it(' registrationEmailResending should true', async () => {
-            const reponse: any = await testManager.registrationEmailResending(correctRegistrationData.email);
-            expect(reponse.status).toEqual(400)
+            const response: any = await testManager.registrationEmailResending(correctRegistrationData.email);
+            expect(response.status).toEqual(204)
         });
 
         //
-        // it(' registrationEmailResending should false', async () => {
-        //     const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
-        //     expect(reponse.status).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
-        // });
+        it(' registrationEmailResending should false', async () => {
+            const reponse: any = await testManager.registrationEmailResending(inCorrectRegistrationData.email);
+            expect(JSON.parse(reponse.text)).toEqual(HTTP_STATUSES.SOMETHING_WRONG_400)
+        });
         //
         // it('get users', async () => {
         //     const reponse = await testManager.getUsers();

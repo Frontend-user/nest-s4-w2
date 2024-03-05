@@ -1,4 +1,17 @@
-import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query, Res} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpException, HttpStatus,
+    NotFoundException,
+    Param,
+    Post,
+    Put,
+    Query,
+    Res
+} from '@nestjs/common';
 import {BlogsService} from './application/blogs.service';
 import {BlogInputCreateModel, BlogViewModel, WithId} from './types/blogs.types';
 import {BlogsMongoDataMapper} from './domain/blogs.mongo.dm';
@@ -23,6 +36,7 @@ export class BlogsController {
     ) {
     }
 
+    @HttpCode(201)
     @Get()
     async getBlogs(
         @Query('searchNameTerm') searchNameTerm?: string,
@@ -57,29 +71,27 @@ export class BlogsController {
         return response;
     }
 
+    @HttpCode(201)
     @Get('/:id')
-    async getBlogById(@Res() res, @Param('id') id: string): Promise<BlogViewModel | any> {
+    async getBlogById(@Param('id') id: string): Promise<BlogViewModel | any> {
         const blog: BlogDocumentType | null = await this.blogsQueryRepository.getBlogById(id);
         if (!blog) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-            return;
+            throw new HttpException('Failed getBlogById', HttpStatus.NOT_FOUND)
         }
-        const mappedBlog = BlogsMongoDataMapper.toView(blog);
-        res.status(200).send(mappedBlog);
+        return BlogsMongoDataMapper.toView(blog)
     }
 
+    @HttpCode(201)
     @Get('/:id/posts')
     async getPostByBlogId(
         @Param('id') id: string,
-        @Res() res,
         @Query('sortBy') sortBy?: string,
         @Query('sortDirection') sortDirection?: string,
         @Query('pageNumber') pageNumber?: number,
         @Query('pageSize') pageSize?: number,
     ) {
         if (!id) {
-            res.sendStatus(404);
-            return;
+            throw new HttpException('Failed getPostByBlogId', HttpStatus.NOT_FOUND)
         }
         const {skip, limit, newPageNumber, newPageSize, sortParams} = QueryUtilsClass.getPagination(
             pageNumber,
@@ -91,8 +103,7 @@ export class BlogsController {
 
         const blog = await this.blogsService.getBlogById(id);
         if (!blog) {
-            res.sendStatus(404);
-            return;
+            throw new HttpException('Failed getPostByBlogId', HttpStatus.NOT_FOUND)
         }
         const {totalCount, posts} = result;
         const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
@@ -106,20 +117,24 @@ export class BlogsController {
             items: changeBlogs,
         };
 
-        return res.send(response);
+        return response
     }
 
+    @HttpCode(201)
     @Post()
-    async createBlog(@Res() res, @Body() body: BlogInputCreateModel): Promise<WithId<BlogViewModel>> {
+    async createBlog(@Body() body: BlogInputCreateModel): Promise<WithId<BlogViewModel>> {
         const blog: BlogDocumentType | false = await this.blogsService.createBlog(body);
-        return blog ? res.send(BlogsMongoDataMapper.toView(blog)) : res.sendStatus(404);
+        if (!blog) {
+            throw new HttpException('Failed createBlog', HttpStatus.NOT_FOUND)
+        }
+        return BlogsMongoDataMapper.toView(blog)
     }
 
+    @HttpCode(201)
     @Post('/:id/posts')
     async createPostByBlogId(
         @Body() body: PostInputCreateModel,
-        @Param('id') id: string,
-        @Res() res,
+        @Param('id') id: string
     ): Promise<WithId<PostViewModel> | undefined> {
         const blog = await this.blogsService.getBlogById(id);
         if (blog) {
@@ -128,28 +143,35 @@ export class BlogsController {
                 body,
                 blog.name,
             );
-            return post ? res.send(post) : res.sendStatus(404);
+            if(!post){
+                throw new HttpException('Failed createPostByBlogId', HttpStatus.NOT_FOUND)
+
+            }
+            return post
         }
-        res.sendStatus(404);
+        throw new HttpException('Failed createPostByBlogId', HttpStatus.NOT_FOUND)
+
     }
 
+    @HttpCode(204)
     @Put('/:id')
-    async updateBlog(@Res() res, @Body() body: BlogInputCreateModel, @Param('id') id: string) {
+    async updateBlog(@Body() body: BlogInputCreateModel, @Param('id') id: string) {
         const response: boolean = await this.blogsService.updateBlog(id, body);
-        res.sendStatus(response ? HTTP_STATUSES.NO_CONTENT_204 : HTTP_STATUSES.NOT_FOUND_404);
+        if(!response){
+            throw new HttpException('Failed updateBlog', HttpStatus.NOT_FOUND)
+        }
     }
 
     @Delete('/:id')
     @HttpCode(204)
-    async deleteBlog(@Res({passthrough: true}) res, @Param('id') id: string) {
+    async deleteBlog(@Param('id') id: string) {
         try {
             const response: boolean = await this.blogsService.deleteBlog(id);
-            // res.sendStatus(response ? HTTP_STATUSES.NO_CONTENT_204 : HTTP_STATUSES.NOT_FOUND_404);
             if (!response) {
-                throw new NotFoundException()
+                throw new HttpException('Failed updateBlog', HttpStatus.NOT_FOUND)
             }
         } catch (error) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            throw new HttpException('Failed updateBlog', HttpStatus.NOT_FOUND)
         }
     }
 }

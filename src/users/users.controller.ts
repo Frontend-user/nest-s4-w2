@@ -1,4 +1,17 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpException, HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    Res,
+    UseGuards
+} from '@nestjs/common';
 import {UsersService} from './application/./users.service';
 import {UsersRepository} from './repositories/users.repository';
 import {UsersQueryRepository} from './repositories/users.query-repository';
@@ -19,7 +32,6 @@ export class CreateUserInputModelType {
     @IsString()
     password: string;
 
-    // @IsEmail({}, { message: "Incorrect Email" })
     @IsEmail()
     email: string;
 
@@ -30,16 +42,13 @@ export class CreateUserInputModelType {
 export class UsersController {
     constructor(
         protected usersService: UsersService,
-        protected usersQueryRepository: UsersQueryRepository,
-        // protected usersRepository: UsersRepository,
-        // protected blogsQueryRepository: BlogsQueryRepository,
-        // protected postsRepository: UsersRepository,
+        protected usersQueryRepository: UsersQueryRepository
     ) {
     }
 
+    @HttpCode(204)
     @Get()
     async getUsers(
-        @Res() res,
         @Query('searchLoginTerm') searchLoginTerm?: string,
         @Query('searchEmailTerm') searchEmailTerm?: string,
         @Query('sortBy') sortBy?: string,
@@ -48,7 +57,7 @@ export class UsersController {
         @Query('pageSize') pageSize?: number,
     ) {
         try {
-           const {skip, limit, newPageNumber, newPageSize} = QueryUtilsClass.getPagination(
+            const {skip, limit, newPageNumber, newPageSize} = QueryUtilsClass.getPagination(
                 pageNumber,
                 pageSize,
             );
@@ -68,18 +77,16 @@ export class UsersController {
                     totalCount: 0,
                     items: [],
                 };
-                res.send(response);
-                return
+
+                return response
             }
             let changeUsers;
             try {
                 changeUsers = users.map((b: UserDocumentType) => UsersMongoDataMapper.toView(b));
             } catch (e) {
-                res.sendStatus(400);
-                return;
+                throw new HttpException('Failed to try get users', HttpStatus.BAD_REQUEST)
             }
             const pagesCount = Math.ceil(totalCount / newPageSize);
-            console.log('1');
 
             const response = {
                 pagesCount: pagesCount,
@@ -88,17 +95,19 @@ export class UsersController {
                 totalCount: totalCount,
                 items: changeUsers,
             };
-            res.send(response);
+            return response
         } catch (error) {
             console.error('Ошибка при получении данных из коллекции:', error);
-            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
+            throw new HttpException('Failed to try get users', HttpStatus.BAD_REQUEST)
+
         }
     }
 
 
     @UseGuards(BasicAuthGuard)
+    @HttpCode(201)
     @Post()
-    async createUser(@Res() res, @Body() body: CreateUserInputModelType) {
+    async createUser(@Body() body: CreateUserInputModelType) {
         try {
             const isReqFromSuperAdmin = true;
             try {
@@ -107,25 +116,26 @@ export class UsersController {
                     isReqFromSuperAdmin,
                 );
                 if (response) {
-                    res.status(HTTP_STATUSES.CREATED_201).send(UsersMongoDataMapper.toView(response));
-                    return;
+                    return UsersMongoDataMapper.toView(response)
                 }
             } catch (e) {
                 console.log(e, 'error');
             }
         } catch (error) {
-            res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
+            throw new HttpException('Failed to createUser', HttpStatus.BAD_REQUEST)
         }
     }
 
     @UseGuards(BasicAuthGuard)
     @Delete('/:id')
-    async deleteUser(@Res() res, @Param('id') id: string) {
+    async deleteUser(@Param('id') id: string) {
         try {
             const response: any = await this.usersService.deleteUser(id);
-            res.sendStatus(response ? HTTP_STATUSES.NO_CONTENT_204 : HTTP_STATUSES.NOT_FOUND_404);
+            if (!response) {
+                throw new HttpException('Failed to deleteUser', HttpStatus.NOT_FOUND)
+            }
         } catch (error) {
-            res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+            throw new HttpException('Failed to deleteUser', HttpStatus.NOT_FOUND)
         }
     }
 }
