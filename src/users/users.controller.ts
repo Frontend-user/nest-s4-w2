@@ -22,6 +22,7 @@ import {UsersMongoDataMapper} from './domain/users.mongo.dm';
 import {QueryUtilsClass} from '../_common/query.utils';
 import {BasicAuthGuard} from "../auth/guards/basic-auth.guart";
 import {IsEmail, IsInt, IsString, Length} from "class-validator";
+import {UsersQueryTransformPipe, UsersQueryTransformPipeTypes} from "./pipes/UsersQueryTransformPipe";
 
 export class CreateUserInputModelType {
     @Length(3, 10)
@@ -45,29 +46,16 @@ export class UsersController {
         protected usersQueryRepository: UsersQueryRepository
     ) {
     }
-
+    // @Query('searchLoginTerm') searchLoginTerm?: string,
+    // @Query('searchEmailTerm') searchEmailTerm?: string,
+    // @Query('sortBy') sortBy?: string,
+    // @Query('sortDirection') sortDirection?: string,
+    // @Query('pageNumber') pageNumber?: number,
+    // @Query('pageSize') pageSize?: number,
     @Get()
-    async getUsers(
-        @Query('searchLoginTerm') searchLoginTerm?: string,
-        @Query('searchEmailTerm') searchEmailTerm?: string,
-        @Query('sortBy') sortBy?: string,
-        @Query('sortDirection') sortDirection?: string,
-        @Query('pageNumber') pageNumber?: number,
-        @Query('pageSize') pageSize?: number,
-    ) {
+    async getUsers(@Query(UsersQueryTransformPipe) usersQueries: any) {
         try {
-            const {skip, limit, newPageNumber, newPageSize} = QueryUtilsClass.getPagination(
-                pageNumber,
-                pageSize,
-            );
-            const {totalCount, users} = await this.usersQueryRepository.getUsers(
-                searchLoginTerm,
-                searchEmailTerm,
-                sortBy,
-                sortDirection,
-                skip,
-                limit,
-            );
+            const {totalCount, users} = await this.usersQueryRepository.getUsers( usersQueries);
             if (!users || !(users.length > 0)) {
                 const response = {
                     pagesCount: 1,
@@ -85,12 +73,12 @@ export class UsersController {
             } catch (e) {
                 throw new HttpException('Failed to try get users', HttpStatus.BAD_REQUEST)
             }
-            const pagesCount = Math.ceil(totalCount / newPageSize);
+            const pagesCount = Math.ceil(totalCount / usersQueries.newPageSize);
 
             const response = {
                 pagesCount: pagesCount,
-                page: +newPageNumber,
-                pageSize: +newPageSize,
+                page: usersQueries.newPageNumber,
+                pageSize: usersQueries.newPageSize,
                 totalCount: totalCount,
                 items: changeUsers,
             };

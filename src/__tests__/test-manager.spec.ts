@@ -169,15 +169,18 @@ export class TestManager {
 
         return JSON.parse(this.blog_1.text);
     }
-    async getUsers() {
-        const getUsers = await request(this.httpServer).get(`/users`);
+    async getUsers(searchLoginTerm?:string,searchEmailTerm?:string,pageSize?:number, pageNumber?:number,sortBy?:string, sortDirection?:string) {
+        const getUsers =
+        await request(this.httpServer).get(`/users?sortBy=${sortBy}&sortDirection=${sortDirection}`);
+        // await request(this.httpServer).get(`/users?searchEmailTerm=${searchEmailTerm}&pageSize=${pageSize}&pageNumber=${pageNumber}`);
+        // await request(this.httpServer).get(`/users?searchNameTerm=${searchNameTerm}&sortBy=${sortBy}&sortDirection=${sortDirection}`);
         return JSON.parse(getUsers.text)
     }
-    async createUserBySuperAdmin() {
+    async createUserBySuperAdmin(userData:any) {
         const reponse = await request(this.httpServer)
             .post('/users')
             .set('Authorization', `${SUPERADMIN_TOKEN}`)
-            .send(correctUser1);
+            .send(userData);
 
         return JSON.parse(reponse.text);
     }

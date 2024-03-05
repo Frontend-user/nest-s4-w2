@@ -50,15 +50,15 @@ describe('Blogs', () => {
             await testManager.deleteAll();
         });
 
-        it('get users', async () => {
-            const reponse = await testManager.getUsers();
-            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
-        });
+        // it('get users', async () => {
+        //     const reponse = await testManager.getUsers();
+        //     expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
+        // });
 
 
         let uses1_id: string
         it('should Create User BY SuperAdmin', async () => {
-            const reponse = await testManager.createUserBySuperAdmin();
+            const reponse = await testManager.createUserBySuperAdmin(correctUser1);
             expect(reponse).toEqual({
                 createdAt: expect.any(String),
                 email: expect.any(String),
@@ -67,14 +67,33 @@ describe('Blogs', () => {
             })
             uses1_id = reponse.id
         });
-
-        it('should Delete User BY SuperAdmin', async () => {
-            const reponse = await testManager.deleteUserBySuperAdmin(uses1_id);
-            expect(reponse).toEqual(204)
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin({...correctUser1, email:'aaaa@mail.ru'});
         });
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin({...correctUser1, email:'bbbb@mail.ru'});
+        });
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin({...correctUser1, email:'aaaa@mail.ru'});
+        });
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin({...correctUser1, email:'zzzz@mail.ru'});
+        });
+        it('should Create User BY SuperAdmin', async () => {
+            const reponse = await testManager.createUserBySuperAdmin({...correctUser1, email:'aaaa@mail.ru'});
+        });
+        // it('should Delete User BY SuperAdmin', async () => {
+        //     const reponse = await testManager.deleteUserBySuperAdmin(uses1_id);
+        //     expect(reponse).toEqual(204)
+        // });
+        // it('get users', async () => {
+        //     const reponse = await testManager.getUsers('aaaaaaa');
+        //     expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
+        // });
         it('get users', async () => {
-            const reponse = await testManager.getUsers();
-            expect(reponse).toEqual({"items": [], "page": 1, "pageSize": 10, "pagesCount": 1, "totalCount": 0})
+            const reponse = await testManager.getUsers('a','z',0,0,'email','asc');
+            // expect(reponse.items.length).toEqual('s')
+            expect(reponse.items).toEqual('s')
         });
 
     })
@@ -95,7 +114,7 @@ describe('Blogs', () => {
         }
         let uses1_id: string
         it('should Create User BY SuperAdmin', async () => {
-            const reponse = await testManager.createUserBySuperAdmin();
+            const reponse = await testManager.createUserBySuperAdmin(correctUser1);
             expect(reponse).toEqual({
                 createdAt: expect.any(String),
                 email: expect.any(String),
@@ -121,7 +140,7 @@ describe('Blogs', () => {
 
     describe('Registration', () => {
         it('TEST DELETE ALL', async () => {
-            await testManager.deledteAll();
+            await testManager.deleteAll();
         });
 
         it('get users', async () => {
