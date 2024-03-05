@@ -1,10 +1,11 @@
 import {ArgumentMetadata, Injectable, PipeTransform} from '@nestjs/common';
+import {SortOrder} from "mongoose";
 
 @Injectable()
 export class UsersQueryTransformPipe implements PipeTransform<string, string> {
     transform(usersQuery: any, metadata: ArgumentMetadata): any {
-        const newPageNumber = !usersQuery.pageNumber ? 1 : usersQuery.pageNumber;
-        const newPageSize = !usersQuery.pageSize ? 10 : usersQuery.pageSize;
+        const newPageNumber = !usersQuery.pageNumber ? 1 : +usersQuery.pageNumber;
+        const newPageSize = !usersQuery.pageSize ? 10 : +usersQuery.pageSize;
         const skip = (newPageNumber - 1) * newPageSize;
         const limit = newPageSize;
         let newSortBy: string
@@ -28,7 +29,7 @@ export class UsersQueryTransformPipe implements PipeTransform<string, string> {
                 ],
             };
         }
-        const sortParams:{ [key: string]: string } = {};
+        const sortParams:SortParamsType = {};
         sortParams[newSortBy] = newSortDir;
         return {
             skip,
@@ -41,11 +42,16 @@ export class UsersQueryTransformPipe implements PipeTransform<string, string> {
     }
 }
 
-export class UsersQueryTransformPipeTypes {
-    searchLoginTerm: string
-    searchEmailTerm: string
-    sortBy: string
-    sortDirection: string
-    pageNumber: number
-    pageSize: number
+export class UsersQueryTransformTypes {
+    skip:number
+    limit:number
+    newPageNumber:number
+    newPageSize:number
+    sortParams:SortParamsType
+    findQuery:any
 }
+
+type SortParamsType = {
+    [key: string]: SortOrder
+}
+
