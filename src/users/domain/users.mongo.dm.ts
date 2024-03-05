@@ -11,21 +11,6 @@ export class UsersMongoDataMapper {
             createdAt: user.accountData.createdAt,
         };
     }
-
-    static createAndGetResponse(usersQueries: UsersQueryTransformTypes, users: UserDocumentType[], totalCount: number): UserResponseType {
-        let changeUsers = users.map((b: UserDocumentType) => UsersMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / usersQueries.newPageSize);
-
-        return {
-            pagesCount: pagesCount,
-            page: usersQueries.newPageNumber,
-            pageSize: usersQueries.newPageSize,
-            totalCount: totalCount,
-            items: changeUsers,
-        };
-
-    }
-
     static createAndGetClearResponse(): UserResponseType {
         return {
             pagesCount: 1,

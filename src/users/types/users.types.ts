@@ -1,4 +1,5 @@
 import {UserViewModel} from "../domain/users-schema";
+import {IsEmail, IsString, Length} from "class-validator";
 
 export type LikeStatus = 'None' | 'Like' | 'Dislike';
 
@@ -43,3 +44,18 @@ export type UserResponseType = {
   totalCount: number
   items: UserViewModel[]
 }
+
+export class CreateUserInputModelType {
+  @Length(3, 10)
+  @IsString()
+  login: string;
+
+  @Length(6, 20)
+  @IsString()
+  password: string;
+
+  @IsEmail()
+  email: string;
+
+
+};

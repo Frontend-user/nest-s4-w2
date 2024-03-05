@@ -15,24 +15,11 @@ import {UsersQueryRepository} from './repositories/users.query-repository';
 import { UserDocumentType} from './domain/users-schema';
 import {UsersMongoDataMapper} from './domain/users.mongo.dm';
 import {BasicAuthGuard} from "../auth/guards/basic-auth.guart";
-import {IsEmail, IsString, Length} from "class-validator";
 import {UsersQueryTransformPipe, UsersQueryTransformTypes} from "./pipes/users-query-transform-pipe";
-import {CommonResponseFabric} from "../_common/common-mapper";
-
-export class CreateUserInputModelType {
-    @Length(3, 10)
-    @IsString()
-    login: string;
-
-    @Length(6, 20)
-    @IsString()
-    password: string;
-
-    @IsEmail()
-    email: string;
+import {CommonResponseFabric} from "../_common/common-response-fabric";
+import {CreateUserInputModelType} from "./types/users.types";
 
 
-};
 
 @Controller('/users')
 export class UsersController {

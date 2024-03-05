@@ -1,7 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import mongoose, {HydratedDocument, SchemaTypes} from 'mongoose';
 import {MyJwtService} from '../../_common/jwt-service';
-import {CreateUserInputModelType} from "../users.controller";
+import {CreateUserInputModelType} from "../types/users.types";
 
 export type UserDocumentType = HydratedDocument<User>;
 export type UserAccountDBMethodsType = {

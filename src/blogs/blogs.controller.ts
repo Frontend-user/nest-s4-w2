@@ -28,7 +28,7 @@ import {query} from 'express';
 import {NotFoundError} from "rxjs";
 import {BlogsQueryTransformPipe, BlogsQueryTransformTypes, BlogsQueryTypes} from "./pipes/blogs-query-transform-pipe";
 import {PostsQueryTransformPipe, PostsQueryTransformTypes} from "../posts/pipes/posts-query-transform-pipe";
-import {CommonResponseFabric} from "../_common/common-mapper";
+import {CommonResponseFabric} from "../_common/common-response-fabric";
 
 @Controller('/blogs')
 export class BlogsController {
@@ -81,18 +81,7 @@ export class BlogsController {
             throw new HttpException('Failed getPostByBlogId', HttpStatus.NOT_FOUND)
         }
         const {totalCount, posts} = result;
-        const changeBlogs = posts.map((b: PostDocumentType) => PostsMongoDataMapper.toView(b));
-        const pagesCount = Math.ceil(totalCount / postsQueries.newPageSize);
-
-        const response = {
-            pagesCount: pagesCount,
-            page: postsQueries.newPageNumber,
-            pageSize: postsQueries.newPageSize,
-            totalCount: totalCount,
-            items: changeBlogs,
-        };
-
-        return response
+        return CommonResponseFabric.createAndGetResponse(postsQueries, posts, totalCount,BlogsMongoDataMapper)
     }
 
     @HttpCode(201)

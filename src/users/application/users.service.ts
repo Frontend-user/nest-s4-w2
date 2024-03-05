@@ -1,8 +1,7 @@
 import { UsersRepository } from '../repositories/users.repository';
 import { User ,UserDocumentType } from '../domain/users-schema';
 import { Injectable } from '@nestjs/common';
-import {IsEmail, IsInt, Length} from "class-validator";
-import {CreateUserInputModelType} from "../users.controller";
+import {CreateUserInputModelType} from "../types/users.types";
 
 
 

@@ -31,7 +31,7 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post('/login')
-    async login(@Response() res, @Body() body: LoginOrEmailPasswordModel): Promise<{
+    async login(@Response({passthrough:true}) res, @Body() body: LoginOrEmailPasswordModel): Promise<{
         accessToken: string
     } | void> {
         const {
