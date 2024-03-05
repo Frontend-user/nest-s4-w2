@@ -340,14 +340,14 @@ window.onload = function() {
       }
     },
     "info": {
-      "title": "Blogs-example",
+      "title": "Cats example",
       "description": "The cats API description",
       "version": "1.0",
       "contact": {}
     },
     "tags": [
       {
-        "name": "blogs",
+        "name": "cats",
         "description": ""
       }
     ],

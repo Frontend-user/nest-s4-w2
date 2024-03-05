@@ -5,8 +5,6 @@ import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {  createWriteStream } from 'fs';
 import { get } from 'http';
 
-import { resolve } from 'path';
-import { writeFileSync } from 'fs';
 
 const PORT = process.env.PORT || 'http://localhost:5000'
 const serverUrl = 'http://localhost:5000'
@@ -14,50 +12,19 @@ const serverUrl = 'http://localhost:5000'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
      appSettings(app)
-// Swagger Configuration
-//     const config = new DocumentBuilder()
-//         .setTitle('Your API')
-//         .setDescription('API description')
-//         .setVersion('1.0')
-//         .build();
-//
-//     const document = SwaggerModule.createDocument(app, config);
-//     SwaggerModule.setup('api', app, document);
-    const config = new DocumentBuilder()
-        .setTitle('Blogs-example')
+    const options = new DocumentBuilder()
+        .setTitle('Cats example')
         .setDescription('The cats API description')
         .setVersion('1.0')
-        .addTag('blogs')
+        .addTag('cats')
         .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('swagger', app, document);
+    const document = SwaggerModule.createDocument(app, options);
+    SwaggerModule.setup('/swagger', app, document);
 
     await app.listen(5000);
 
-
-    // const options = new DocumentBuilder()
-    //     .setTitle('Cats example')
-    //     .setDescription('The cats API description')
-    //     .setVersion('1.0')
-    //     .addTag('cats')
-    //     .build();
-    // const document = SwaggerModule.createDocument(app, options);
-    // SwaggerModule.setup('/swagger', app, document);
     // if (process.env.NODE_ENV === 'development') {
-    //     const pathToSwaggerStaticFolder = resolve(process.cwd(), 'swagger-static');
-    //
-    //     // write swagger json file
-    //     const pathToSwaggerJson = resolve(
-    //         pathToSwaggerStaticFolder,
-    //         'swagger.json',
-    //     );
-    //     const swaggerJson = JSON.stringify(document, null, 2);
-    //     writeFileSync(pathToSwaggerJson, swaggerJson);
-    //     console.log(`Swagger JSON file written to: '/swagger-static/swagger.json'`);
-    // }
 
-
-    // if (process.env.NODE_ENV === 'development') {
         // write swagger ui files
         get(
             `${serverUrl}/swagger/swagger-ui-bundle.js`, function
