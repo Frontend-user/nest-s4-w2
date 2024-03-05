@@ -11,9 +11,15 @@ import {AuthModule} from "./auth/auth.module";
 import {BlogsModule} from "./blogs/blogs.module";
 import {PostsModule} from "./posts/posts.module";
 import {UsersModule} from "./users/users.module";
+import {ServeStaticModule} from "@nestjs/serve-static";
+import { join } from 'path';
 
 @Module({
     imports: [
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'swagger-static'),
+            serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
+        }),
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
         MongooseModule.forFeature([{name: Post.name, schema: PostSchema}]),
