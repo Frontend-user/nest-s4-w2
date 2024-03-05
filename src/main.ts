@@ -5,7 +5,8 @@ import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {  createWriteStream } from 'fs';
 import { get } from 'http';
 const PORT = process.env.PORT || 'http://localhost:5000'
-const serverUrl = process.env.serverUrl  ||'http://localhost:5000'
+const serverUrl = 'http://localhost:5000'
+// const serverUrl = process.env.serverUrl  ||'http://localhost:5000'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     appSettings(app)
@@ -19,7 +20,7 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document);
     await app.listen(PORT);
 
-    if (process.env.NODE_ENV === 'development') {
+    // if (process.env.NODE_ENV === 'development') {
         // write swagger ui files
         get(
             `${serverUrl}/swagger/swagger-ui-bundle.js`, function
@@ -55,7 +56,7 @@ async function bootstrap() {
             );
         });
 
-    }
+    // }
 
 }
 

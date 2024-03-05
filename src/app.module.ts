@@ -3,7 +3,6 @@ import {AppController} from './app.controller';
 import {AppService} from './app.service';
 import {MongooseModule} from '@nestjs/mongoose';
 import {ConfigModule} from '@nestjs/config';
-import * as process from 'process';
 import {Blog, BlogSchema} from './blogs/domain/blogs-schema';
 import {PostSchema, Post} from './posts/domain/posts-schema';
 import {User, UserSchema} from './users/domain/users-schema';
