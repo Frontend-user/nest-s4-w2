@@ -4,7 +4,6 @@ import {appSettings} from "./app.settings";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {  createWriteStream } from 'fs';
 import { get } from 'http';
-import process from "process";
 const PORT = process.env.PORT || 'http://localhost:5000'
 const serverUrl = process.env.serverUrl  ||'http://localhost:5000'
 async function bootstrap() {
