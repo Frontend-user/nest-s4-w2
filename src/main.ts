@@ -21,7 +21,13 @@ async function bootstrap() {
     await app.listen(PORT);
 
     if (process.env.NODE_ENV === 'development') {
-
+            get('',function
+            (response) {
+                response.pipe(createWriteStream('swagger-static/swagger-ui-bundle.js'));
+                console.log(
+                    `Swagger UI bundl!!!!!!!!!!!!!!e file written to: '/swagger-static/swagger-ui-bundle.js'`,
+                );
+            });
         // write swagger ui files
         get(
             `${serverUrl}/swagger/swagger-ui-bundle.js`, function
