@@ -20,9 +20,7 @@ import {IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
         JwtModule.register({
             secret: '123456',
             signOptions: {expiresIn: '10s'},
-        }),
-
-        // MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+        })
     ],
     controllers: [AuthController],
     providers: [BasicStrategy, AuthService, LocalStrategy,

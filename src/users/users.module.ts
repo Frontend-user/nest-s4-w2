@@ -4,7 +4,6 @@ import {UsersRepository} from './repositories/users.repository';
 import {UsersController} from './users.controller';
 import {MongooseModule} from '@nestjs/mongoose';
 import {User, UserSchema} from './domain/users-schema';
-import {AuthModule} from "../auth/auth.module";
 import {UsersQueryRepository} from "./repositories/users.query-repository";
 import {BlogsModule} from "../blogs/blogs.module";
 import {PostsModule} from "../posts/posts.module";
