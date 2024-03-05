@@ -28,7 +28,7 @@ import {IsConfirmationCodeValidConstraint} from "./pipes/confirm-code.pipe";
     providers: [BasicStrategy, AuthService, LocalStrategy,
         MyJwtService, JwtService, NodemailerService,
         IsConfirmationCodeValidConstraint],
-    exports: [JwtService]
+    exports: [JwtService,MyJwtService]
 })
 export class AuthModule {
 }

@@ -40,7 +40,8 @@ import {UsersModule} from "./users/users.module";
         PostsModule
     ],
 
-    controllers: [AppController, BlogsController, PostsController, UsersController],
+    controllers: [AppController],
+    // controllers: [AppController, BlogsController, PostsController, UsersController],
     providers: [
         AppService,
         // BlogsService,
