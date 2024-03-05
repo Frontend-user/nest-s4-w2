@@ -6,7 +6,7 @@ import {  createWriteStream } from 'fs';
 import { get } from 'http';
 import process from "process";
 const PORT = process.env.PORT || 'http://localhost:5000'
-const serverUrl = 'http://localhost:5000'
+const serverUrl = process.env.serverUrl  ||'http://localhost:5000'
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     appSettings(app)
@@ -21,13 +21,6 @@ async function bootstrap() {
     await app.listen(PORT);
 
     if (process.env.NODE_ENV === 'development') {
-            get('',function
-            (response) {
-                response.pipe(createWriteStream('swagger-static/swagger-ui-bundle.js'));
-                console.log(
-                    `Swagger UI bundl!!!!!!!!!!!!!!e file written to: '/swagger-static/swagger-ui-bundle.js'`,
-                );
-            });
         // write swagger ui files
         get(
             `${serverUrl}/swagger/swagger-ui-bundle.js`, function
