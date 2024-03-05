@@ -23,6 +23,9 @@ import {MyJwtService} from './_common/jwt-service';
 import {AuthModule} from "./auth/auth.module";
 import {BasicStrategy} from "./auth/strategies/basic.strategy";
 import {AuthController} from "./auth/presentation/auth.controller";
+import {BlogsModule} from "./blogs/blogs.module";
+import {PostsModule} from "./posts/posts.module";
+import {UsersModule} from "./users/users.module";
 
 @Module({
     imports: [
@@ -31,22 +34,25 @@ import {AuthController} from "./auth/presentation/auth.controller";
         MongooseModule.forFeature([{name: Post.name, schema: PostSchema}]),
         MongooseModule.forFeature([{name: Blog.name, schema: BlogSchema}]),
         MongooseModule.forRoot(process.env.MONGO_NEST_URL as string),
-        AuthModule
+        AuthModule,
+        UsersModule,
+        BlogsModule,
+        PostsModule
     ],
 
     controllers: [AppController, BlogsController, PostsController, UsersController],
     providers: [
         AppService,
-        BlogsService,
-        BlogsRepository,
-        BlogsQueryRepository,
-        PostsRepository,
-        PostsService,
-        PostsQueryRepository,
-        UsersService,
-        UsersQueryRepository,
-        UsersRepository,
-        MyJwtService
+        // BlogsService,
+        // BlogsRepository,
+        // BlogsQueryRepository,
+        // PostsRepository,
+        // PostsService,
+        // PostsQueryRepository,
+        // UsersService,
+        // UsersQueryRepository,
+        // UsersRepository,
+        // MyJwtService
     ],
 })
 export class AppModule {

@@ -1,11 +1,11 @@
 import {
     Body,
     Controller,
-    Delete,
+    Delete, forwardRef,
     Get,
     HttpCode,
     HttpException,
-    HttpStatus,
+    HttpStatus, Inject,
     Param,
     Post,
     Put,
@@ -31,8 +31,8 @@ export class PostsController {
     constructor(
         protected postsService: PostsService,
         protected postsQueryRepository: PostsQueryRepository,
+        @Inject(forwardRef(() => BlogsQueryRepository))
         protected blogsQueryRepository: BlogsQueryRepository,
-        protected postsRepository: PostsRepository,
     ) {
     }
 

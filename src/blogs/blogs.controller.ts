@@ -1,10 +1,10 @@
 import {
     Body,
     Controller,
-    Delete,
+    Delete, forwardRef,
     Get,
     HttpCode,
-    HttpException, HttpStatus,
+    HttpException, HttpStatus, Inject,
     NotFoundException,
     Param,
     Post,
@@ -33,19 +33,21 @@ import {CommonResponseFabric} from "../_common/common-response-fabric";
 @Controller('/blogs')
 export class BlogsController {
     constructor(protected blogsService: BlogsService,
+                @Inject(forwardRef(() => PostsService))
                 protected postsService: PostsService,
                 protected blogsQueryRepository: BlogsQueryRepository,
+                @Inject(forwardRef(() => PostsQueryRepository))
                 protected postsQueryRepository: PostsQueryRepository,
     ) {
     }
 
     @Get()
     async getBlogs(
-        @Query(BlogsQueryTransformPipe) blogsQueries: BlogsQueryTransformTypes ) {
+        @Query(BlogsQueryTransformPipe) blogsQueries: BlogsQueryTransformTypes) {
         const {totalCount, blogs} = await this.blogsQueryRepository.getBlogs(blogsQueries);
         // const changeBlogs = blogs.map((b: BlogDocumentType) => BlogsMongoDataMapper.toView(b));
         // const pagesCount = Math.ceil(totalCount / blogsQueries.newPageSize);
-        return CommonResponseFabric.createAndGetResponse(blogsQueries, blogs, totalCount,BlogsMongoDataMapper)
+        return CommonResponseFabric.createAndGetResponse(blogsQueries, blogs, totalCount, BlogsMongoDataMapper)
 
         // const response = {///mapper
         //     pagesCount: pagesCount,
@@ -81,7 +83,7 @@ export class BlogsController {
             throw new HttpException('Failed getPostByBlogId', HttpStatus.NOT_FOUND)
         }
         const {totalCount, posts} = result;
-        return CommonResponseFabric.createAndGetResponse(postsQueries, posts, totalCount,BlogsMongoDataMapper)
+        return CommonResponseFabric.createAndGetResponse(postsQueries, posts, totalCount, PostsMongoDataMapper)
     }
 
     @HttpCode(201)
@@ -107,7 +109,7 @@ export class BlogsController {
                 body,
                 blog.name,
             );
-            if(!post){
+            if (!post) {
                 throw new HttpException('Failed createPostByBlogId', HttpStatus.NOT_FOUND)
 
             }
@@ -121,7 +123,7 @@ export class BlogsController {
     @Put('/:id')
     async updateBlog(@Body() body: BlogInputCreateModel, @Param('id') id: string) {
         const response: boolean = await this.blogsService.updateBlog(id, body);
-        if(!response){
+        if (!response) {
             throw new HttpException('Failed updateBlog', HttpStatus.NOT_FOUND)
         }
     }
