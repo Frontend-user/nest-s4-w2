@@ -18,11 +18,11 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document);
     await app.listen(3000);
 
-    if (process.env.NODE_ENV === 'development') {
+    // if (process.env.NODE_ENV === 'development') {
 
         // write swagger ui files
         get(
-            `swagger/swagger-ui-bundle.js`, function
+            `https://nest-s4-w2.vercel.app/swagger/swagger-ui-bundle.js`, function
             (response) {
                 response.pipe(createWriteStream('swagger-static/swagger-ui-bundle.js'));
                 console.log(
@@ -55,7 +55,7 @@ async function bootstrap() {
             );
         });
 
-    }
+    // }
 
 }
 
